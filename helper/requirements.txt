@@ -1,0 +1,5 @@
+elasticsearch
+discord
+bs4
+argparse
+requests
