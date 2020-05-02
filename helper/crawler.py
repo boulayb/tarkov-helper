@@ -5,11 +5,13 @@ from argparse import ArgumentParser
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
+import json
 import requests
 import logging
 import itertools
 
 CONST_BASE_URL = "https://escapefromtarkov.gamepedia.com"
+CONST_LOOT_GOBLIN = "https://eft-loot.com/page-data/index/page-data.json"
 CONST_LOOT_PAGE = "/Loot"
 
 # logs init
@@ -36,6 +38,57 @@ def crawl_loot_item(item_url):
     item_html = r.text
     item_soup = BeautifulSoup(item_html, 'html.parser')
 
+    # get the item details table
+    item_details_table = item_soup.find(id='va-infobox0-content') # should be unique
+
+    # get the item icon
+    try:
+        item_icon = item_soup.find('td', {'class': 'va-infobox-icon'}).find('img')['src']
+        if item_icon is not None and item_icon != "" and item_icon != "\n":
+            logger.info("Icon found")
+            icon = item_icon
+        else:
+            raise Exception
+    except:
+        logger.info("Warning: Icon not found for loot item " + item_url)
+        icon = ""
+
+    # get the item weight
+    try:
+        item_weight = item_details_table.find(text="Weight").parent.parent.find('td', {'class': 'va-infobox-content'}).getText()
+        if item_weight is not None and item_weight != "" and item_weight != "\n":
+            logger.info("Weight found")
+            weight = item_weight
+        else:
+            raise Exception
+    except:
+        logger.info("Warning: Weight not found for loot item " + item_url)
+        weight = "Not found"
+
+    # get the item size
+    try:
+        item_size = item_details_table.find(text="Grid size").parent.parent.find('td', {'class': 'va-infobox-content'}).getText()
+        if item_size is not None and item_size != "" and item_size != "\n":
+            logger.info("Size found")
+            size = item_size
+        else:
+            raise Exception
+    except:
+        logger.info("Warning: Size not found for loot item " + item_url)
+        size = "Not found"
+
+    # get the item exp
+    try:
+        item_exp = item_details_table.find(text="Loot experience").parent.parent.find('td', {'class': 'va-infobox-content'}).getText()
+        if item_exp is not None and item_exp != "" and item_exp != "\n":
+            logger.info("Exp found")
+            exp = item_exp
+        else:
+            raise Exception
+    except:
+        logger.info("Warning: Exp not found for loot item " + item_url)
+        exp = "Not found"
+
     # get the item name
     try:
         item_name = item_soup.find(id='firstHeading').getText()
@@ -46,7 +99,7 @@ def crawl_loot_item(item_url):
             raise Exception
     except:
         logger.info("Warning: Name not found for loot item " + item_url)
-        name = "No name found."
+        name = "No name found"
 
     # get the item description
     try:
@@ -58,10 +111,15 @@ def crawl_loot_item(item_url):
             raise Exception
     except:
         logger.info("Warning: Description not found for loot item " + item_url)
-        description = "No description found."
+        description = "No description found"
 
     item_data['name'] = name
+    item_data['icon'] = icon
+    item_data['weight'] = weight
+    item_data['size'] = size
+    item_data['exp'] = exp
     item_data['description'] = description
+    item_data['url'] = CONST_BASE_URL + item_url
 
     return item_data
 
@@ -94,6 +152,33 @@ def crawl_loot():
     return loot_data
 
 
+# retrieve prices from loot goblin for each item
+def crawl_prices(data):
+
+    # get the prices json
+    logger.info("Getting JSON from " + CONST_LOOT_GOBLIN)
+    r = requests.get(CONST_LOOT_GOBLIN)
+    r.raise_for_status()
+    goblin_json = json.loads(r.text)
+    items_list = goblin_json['result']['data']['allDataJson']['nodes']
+
+    logger.info("Getting prices from goblin list")
+    for item in items_list:
+        item_name = item['name']
+        item_price = item['price_avg']
+        item_price_slot = item['price_per_slot']
+        item_price_date = item['timestamp']
+
+        if item_name in data['loot']:
+            data['loot'][item_name]['price'] = item_price
+            data['loot'][item_name]['price_slot'] = item_price_slot
+            data['loot'][item_name]['price_date'] = item_price_date
+        else:
+            logger.info("Warning: Price not added, no object found for item " + item_name)
+    
+    return data
+
+
 # format the crawled data to Elasticsearch bulk format 
 # {'index': {'_index': 'tarkov', '_type': 'loot', '_id': item_name}}
 # {'name': item_name, 'description': item_description, etc...}
@@ -116,6 +201,9 @@ def to_es_bulk_format(data):
 logger.info("Crawling")
 data = {}
 data['loot'] = crawl_loot()
+
+# item prices from loot goblin
+data = crawl_prices(data)
 
 # format to es bulk format
 logger.info("Formating to bulk format")
