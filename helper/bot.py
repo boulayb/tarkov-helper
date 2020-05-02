@@ -64,7 +64,9 @@ def build_tips_embed():
         'Allways insure your belongings.',
         'Don\'t forget to log in to retrieve your insurances returns.',
         'The price that matters is the price per slot.',
-        'As a group, always have a leading leader.']
+        'As a group, always have a leading leader.',
+        'Stay frosty.',
+        'Keep an eye on the clock.']
 
     embed = discord.Embed(
         title=random.choice(tips_list),
