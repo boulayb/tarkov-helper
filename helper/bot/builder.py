@@ -64,7 +64,7 @@ def build_item_embed(item):
 
     else:
         embed = discord.Embed(
-            title='__**' + item['name'] + '**__ - ```' + item['type'] + '```',
+            title='**' + item['name'] + '** - ```' + item['type'] + '```',
             description=item['description'] + "\n",
             timestamp=tools.convert_date(item['price_date']),
             url=item['url'],
