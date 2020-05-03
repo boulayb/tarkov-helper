@@ -1,27 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
-from argparse import ArgumentParser
-from elasticsearch import Elasticsearch
-from elasticsearch.helpers import bulk
 
-import json
 import requests
-import logging
 import itertools
 
-CONST_BASE_URL = "https://escapefromtarkov.gamepedia.com"
-CONST_LOOT_GOBLIN = "https://eft-loot.com/page-data/index/page-data.json"
-CONST_LOOT_PAGE = "/Loot"
+from crawler import CONST_BASE_URL, logger
 
-# logs init
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter(fmt='%(asctime)s :: %(levelname)s :: %(message)s')
-hdlr = logging.FileHandler("./logs_crawler.txt")
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr)
+CONST_LOOT_PAGE = "/Loot"
 
 
 # crawl a single item page to retrieve infos
@@ -52,6 +38,18 @@ def crawl_loot_item(item_url):
     except:
         logger.info("Warning: Icon not found for loot item " + item_url)
         icon = ""
+
+    # get the item type
+    try:
+        item_type = item_details_table.find(text="Type").parent.parent.find('td', {'class': 'va-infobox-content'}).getText()
+        if item_type is not None and item_type != "" and item_type != "\n":
+            logger.info("Type found")
+            type_ = item_type
+        else:
+            raise Exception
+    except:
+        logger.info("Warning: Type not found for loot item " + item_url)
+        type_ = ""
 
     # get the item weight
     try:
@@ -113,6 +111,7 @@ def crawl_loot_item(item_url):
         logger.info("Warning: Description not found for loot item " + item_url)
         description = "No description found"
 
+    item_data['type'] = type_
     item_data['name'] = name
     item_data['icon'] = icon
     item_data['weight'] = weight
@@ -150,72 +149,3 @@ def crawl_loot():
             loot_data[name] = crawl_loot_item(link)
 
     return loot_data
-
-
-# retrieve prices from loot goblin for each item
-def crawl_prices(data):
-
-    # get the prices json
-    logger.info("Getting JSON from " + CONST_LOOT_GOBLIN)
-    r = requests.get(CONST_LOOT_GOBLIN)
-    r.raise_for_status()
-    goblin_json = json.loads(r.text)
-    items_list = goblin_json['result']['data']['allDataJson']['nodes']
-
-    logger.info("Getting prices from goblin list")
-    for item in items_list:
-        item_name = item['name']
-        item_price = item['price_avg']
-        item_price_slot = item['price_per_slot']
-        item_price_date = item['timestamp']
-
-        if item_name in data['loot']:
-            data['loot'][item_name]['price'] = item_price
-            data['loot'][item_name]['price_slot'] = item_price_slot
-            data['loot'][item_name]['price_date'] = item_price_date
-        else:
-            logger.info("Warning: Price not added, no object found for item " + item_name)
-    
-    return data
-
-
-# format the crawled data to Elasticsearch bulk format 
-# {'index': {'_index': 'tarkov', '_type': 'loot', '_id': item_name}}
-# {'name': item_name, 'description': item_description, etc...}
-def to_es_bulk_format(data):
-    bulk = []
-
-    for category_type, category in data.items():
-        for obj_type, obj in category.items():
-            index = {'index': {'_index': 'tarkov', '_type': category_type, '_id': obj_type}}
-            document = obj
-            bulk.append(index)
-            bulk.append(document)
-    
-    return bulk
-
-
-### TODO: add arguments parsing
-
-# result dict
-logger.info("Crawling")
-data = {}
-data['loot'] = crawl_loot()
-
-# item prices from loot goblin
-data = crawl_prices(data)
-
-# format to es bulk format
-logger.info("Formating to bulk format")
-bulk_data = to_es_bulk_format(data)
-
-# send to elasticsearch
-logger.info("Sending to elasticsearch")
-es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
-es.bulk(index='tarkov', body=bulk_data)
-
-logger.info("Done!")
-
-# close log handle
-hdlr.close()
-logger.removeHandler(hdlr)
