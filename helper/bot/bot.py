@@ -87,4 +87,5 @@ async def on_ready():
     await client.change_presence(activity=discord.Game('!command / !co'))
 
 
-client.run(TOKEN)
+if __name__ == "__main__":
+    client.run(TOKEN)
