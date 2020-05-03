@@ -64,7 +64,7 @@ def build_item_embed(item):
 
     else:
         embed = discord.Embed(
-            title=item['name'],
+            title='__**' + item['name'] + '**__ - ```' + item['type'] + '```',
             description=item['description'] + "\n",
             timestamp=tools.convert_date(item['price_date']),
             url=item['url'],
@@ -72,7 +72,7 @@ def build_item_embed(item):
         )
 
         embed.set_thumbnail(url=item['icon'])
-        embed.set_footer(text='Last updated: ')
+        embed.set_footer(text='Click title for more infos - Last updated: ')
         embed.add_field(name='Size', value=item['size'], inline=True)
         embed.add_field(name='Weight', value=item['weight'], inline=True)
         embed.add_field(name='Exp on loot', value=item['exp'] + "\n", inline=True) # "\u200b" to add a blank line
