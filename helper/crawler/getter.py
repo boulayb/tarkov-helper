@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from crawler import logger
+from crawler import CONST_BASE_URL, logger
 
 
 # get the item icon
@@ -113,3 +113,35 @@ def get_item_description(item_soup, item_url):
         description = "No description found"
     
     return description
+
+
+# get the item locations
+def get_item_locations(item_soup, item_url):
+    try:
+        locations = []
+        images_found = False
+        current_node = item_soup.find(id="Location").parent.find_next_sibling()
+        while current_node.name == 'ul' or current_node.name == 'h3' or current_node.name == 'li':  # ul == list of locations, h3 == title/map of locations, li == images of locations
+
+            if current_node.name == 'ul':
+                # search for links in locations, if there is we keep them to display them
+                for children in current_node.findChildren(recursive=False):
+                    location = children.getText()
+                    links = children.find_all('a')
+                    links_dict = {link.getText():link['href'] for link in links}
+                    for text, link in links_dict.items():
+                        location = location.replace(text, '[' + text + '](' + CONST_BASE_URL + link + ')')
+                    locations.append(location)
+
+            elif current_node.name == 'li' and images_found is False:
+                images_found = True
+
+            current_node = current_node.find_next_sibling()
+
+        if images_found is True:
+            locations.append('Check [wiki page](' + CONST_BASE_URL + item_url + '#Location) for image')
+    except:
+        logger.info("Warning: Locations not found for item " + item_url)
+
+    return locations
+

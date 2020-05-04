@@ -63,8 +63,14 @@ def build_item_embed(item):
         )
 
     else:
+        # append type to title if it exist
+        if item['type']:
+            title = '**' + item['name'] + '** - ```' + item['type'] + '```'
+        else:
+            title = '**' + item['name'] + '**'
+
         embed = discord.Embed(
-            title='**' + item['name'] + '** - ```' + item['type'] + '```',
+            title=title,
             description=item['description'] + "\n",
             timestamp=tools.convert_date(item['price_date']),
             url=item['url'],
@@ -75,8 +81,18 @@ def build_item_embed(item):
         embed.set_footer(text='Click title for more infos - Last updated: ')
         embed.add_field(name='Size', value=item['size'], inline=True)
         embed.add_field(name='Weight', value=item['weight'], inline=True)
-        embed.add_field(name='Exp on loot', value=item['exp'] + "\n", inline=True) # "\u200b" to add a blank line
+        embed.add_field(name='Exp on loot', value=item['exp'] + '\n', inline=True) # "\u200b" to add a blank line
         embed.add_field(name='Avg. price', value=str(item['price']) + ' ₽', inline=True)
         embed.add_field(name='Avg. price/slot', value=str(item['price_slot']) + ' ₽', inline=True)
+
+        # add locations if it exist
+        if len(item['locations']) > 0:
+            locations_str = '- ' + '\n- '.join(item['locations'])   # one location per line
+            if len(locations_str) > 1024:   # one field can only contain a maximum of 1024 characters
+                see_more = "\n- See more [here](" + item['url'] + "#Location)" 
+                last_line = locations_str[:1024-len(see_more)].rfind('\n')
+                locations_str = locations_str[:last_line]
+                locations_str += see_more
+            embed.add_field(name='Locations', value=locations_str, inline=False)
 
     return embed
