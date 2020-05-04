@@ -14,3 +14,14 @@ def convert_date(date):
 
     return proper_date
 
+
+# build an embed string from a list of strings
+def build_string(string_list, item_url):
+    embed_str = '- ' + '\n- '.join(string_list)   # one string per line
+    if len(embed_str) > 1024:   # one field can only contain a maximum of 1024 characters
+        see_more = "\n- See more [here](" + item_url + ")" 
+        last_line = embed_str[:1024-len(see_more)].rfind('\n')
+        embed_str = embed_str[:last_line]
+        embed_str += see_more
+
+    return embed_str

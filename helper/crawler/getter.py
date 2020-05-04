@@ -117,10 +117,14 @@ def get_item_description(item_soup, item_url):
 
 # get the item locations
 def get_item_locations(item_soup, item_url):
+    locations = []
     try:
-        locations = []
         images_found = False
-        current_node = item_soup.find(id="Location").parent.find_next_sibling()
+        current_node = item_soup.find(id="Location")
+        if current_node is None:
+            current_node = item_soup.find(id="Spawn_Location")
+        current_node = current_node.parent.find_next_sibling()
+
         while current_node.name == 'ul' or current_node.name == 'h3' or current_node.name == 'li':  # ul == list of locations, h3 == title/map of locations, li == images of locations
 
             if current_node.name == 'ul':
@@ -144,4 +148,37 @@ def get_item_locations(item_soup, item_url):
         logger.info("Warning: Locations not found for item " + item_url)
 
     return locations
+
+
+### TODO: fix p tag
+# get the item notes
+def get_item_notes(item_soup, item_url):
+    notes = []
+    try:
+        current_node = item_soup.find(id="Notes").parent.find_next_sibling()
+        while current_node.name == 'ul' or current_node.name == 'p':    # ul == list of notes, p == single note
+
+            if current_node.name == 'ul':
+                # search for links in notes, if there is we keep them to display them
+                for children in current_node.findChildren(recursive=False):
+                    note = children.getText()
+                    links = children.find_all('a')
+                    links_dict = {link.getText():link['href'] for link in links}
+                    for text, link in links_dict.items():
+                        note = note.replace(text, '[' + text + '](' + CONST_BASE_URL + link + ')')
+                    notes.append(note)
+            
+            elif current_node == 'p':
+                note = current_node.getText()
+                links = current_node.find_all('a')
+                links_dict = {link.getText():link['href'] for link in links}
+                for text, link in links_dict.items():
+                    note = note.replace(text, '[' + text + '](' + CONST_BASE_URL + link + ')')
+                notes.append(note)
+
+            current_node = current_node.find_next_sibling()
+    except:
+        return notes
+    
+    return notes
 

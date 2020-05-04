@@ -79,6 +79,12 @@ def build_item_embed(item):
 
         embed.set_thumbnail(url=item['icon'])
         embed.set_footer(text='Click title for more infos - Last updated: ')
+
+        # add notes if it exist
+        if len(item['notes']) > 0:
+            notes_str = tools.build_string(item['notes'], item['url'] + "#Notes")
+            embed.add_field(name='Notes', value=notes_str, inline=False)
+
         embed.add_field(name='Size', value=item['size'], inline=True)
         embed.add_field(name='Weight', value=item['weight'], inline=True)
         embed.add_field(name='Exp on loot', value=item['exp'] + '\n', inline=True) # "\u200b" to add a blank line
@@ -87,12 +93,7 @@ def build_item_embed(item):
 
         # add locations if it exist
         if len(item['locations']) > 0:
-            locations_str = '- ' + '\n- '.join(item['locations'])   # one location per line
-            if len(locations_str) > 1024:   # one field can only contain a maximum of 1024 characters
-                see_more = "\n- See more [here](" + item['url'] + "#Location)" 
-                last_line = locations_str[:1024-len(see_more)].rfind('\n')
-                locations_str = locations_str[:last_line]
-                locations_str += see_more
+            locations_str = tools.build_string(item['locations'], item['url'] + "#Location")
             embed.add_field(name='Locations', value=locations_str, inline=False)
 
     return embed
