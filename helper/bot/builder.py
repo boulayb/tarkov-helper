@@ -72,7 +72,7 @@ def build_item_embed(item):
         embed = discord.Embed(
             title=title,
             description=item['description'] + "\n",
-            timestamp=tools.convert_date(item['price_date']),
+            timestamp=tools.convert_date(item['price_date']),   ### TODO: put date in "days since"
             url=item['url'],
             colour=discord.Colour.blue()
         )

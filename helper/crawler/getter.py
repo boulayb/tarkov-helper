@@ -150,7 +150,6 @@ def get_item_locations(item_soup, item_url):
     return locations
 
 
-### TODO: fix p tag
 # get the item notes
 def get_item_notes(item_soup, item_url):
     notes = []
@@ -168,7 +167,7 @@ def get_item_notes(item_soup, item_url):
                         note = note.replace(text, '[' + text + '](' + CONST_BASE_URL + link + ')')
                     notes.append(note)
             
-            elif current_node == 'p':
+            elif current_node.name == 'p':
                 note = current_node.getText()
                 links = current_node.find_all('a')
                 links_dict = {link.getText():link['href'] for link in links}
