@@ -72,13 +72,12 @@ def build_item_embed(item):
         embed = discord.Embed(
             title=title,
             description=' '.join(item['description']),
-            timestamp=tools.convert_date(item['price_date']),   ### TODO: put date in "days since"
             url=item['url'],
             colour=discord.Colour.blue()
         )
 
         embed.set_thumbnail(url=item['icon'])
-        embed.set_footer(text='Click title for more infos - Last updated: ')
+        embed.set_footer(text='Click title for more infos - Last price update: ' + tools.days_since(tools.convert_date(item['price_date'])))
 
         if len(item['notes']) > 0:
             notes_str = tools.build_string(item['notes'], item['url'] + "#Notes")
