@@ -71,7 +71,7 @@ def build_item_embed(item):
 
         embed = discord.Embed(
             title=title,
-            description=item['description'] + "\n",
+            description=' '.join(item['description']),
             timestamp=tools.convert_date(item['price_date']),   ### TODO: put date in "days since"
             url=item['url'],
             colour=discord.Colour.blue()
@@ -80,7 +80,6 @@ def build_item_embed(item):
         embed.set_thumbnail(url=item['icon'])
         embed.set_footer(text='Click title for more infos - Last updated: ')
 
-        # add notes if it exist
         if len(item['notes']) > 0:
             notes_str = tools.build_string(item['notes'], item['url'] + "#Notes")
             embed.add_field(name='Notes', value=notes_str, inline=False)
@@ -91,7 +90,13 @@ def build_item_embed(item):
         embed.add_field(name='Avg. price', value=str(item['price']) + ' ₽', inline=True)
         embed.add_field(name='Avg. price/slot', value=str(item['price_slot']) + ' ₽', inline=True)
 
-        # add locations if it exist
+        if len(item['quests']) > 0:
+            quests_str = tools.build_string(item['quests'], item['url'] + "#Quests")
+            embed.add_field(name='Quests', value=quests_str, inline=False)
+        if len(item['hideouts']) > 0:
+            hideouts_str = tools.build_string(item['hideouts'], item['url'] + "#Hideout")
+            embed.add_field(name='Hideouts', value=hideouts_str, inline=False)
+
         if len(item['locations']) > 0:
             locations_str = tools.build_string(item['locations'], item['url'] + "#Location")
             embed.add_field(name='Locations', value=locations_str, inline=False)

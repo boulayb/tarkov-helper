@@ -39,6 +39,8 @@ def crawl_loot_item(item_url):
     item_data['exp'] = getter.get_item_exp(item_details_table, item_url)
     item_data['locations'] = getter.get_item_locations(item_soup, item_url)
     item_data['notes'] = getter.get_item_notes(item_soup, item_url)
+    item_data['quests'] = getter.get_item_quests(item_soup, item_url)
+    item_data['hideouts'] = getter.get_item_hideouts(item_soup, item_url)
 
     return item_data
 

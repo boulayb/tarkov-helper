@@ -19,70 +19,6 @@ def get_item_icon(item_soup, item_url):
     return icon
 
 
-# get the item type
-def get_item_type(item_details_table, item_url):
-    try:
-        item_type = item_details_table.find(text="Type").parent.parent.find('td', {'class': 'va-infobox-content'}).getText()
-        if item_type is not None and item_type != "" and item_type != "\n":
-            logger.info("Type found")
-            type_ = item_type
-        else:
-            raise Exception
-    except:
-        logger.info("Warning: Type not found for item " + item_url)
-        type_ = ""
-
-    return type_
-
-
-# get the item weight
-def get_item_weight(item_details_table, item_url):
-    try:
-        item_weight = item_details_table.find(text="Weight").parent.parent.find('td', {'class': 'va-infobox-content'}).getText()
-        if item_weight is not None and item_weight != "" and item_weight != "\n":
-            logger.info("Weight found")
-            weight = item_weight
-        else:
-            raise Exception
-    except:
-        logger.info("Warning: Weight not found for item " + item_url)
-        weight = "Not found"
-
-    return weight
-
-
-# get the item size
-def get_item_size(item_details_table, item_url):
-    try:
-        item_size = item_details_table.find(text="Grid size").parent.parent.find('td', {'class': 'va-infobox-content'}).getText()
-        if item_size is not None and item_size != "" and item_size != "\n":
-            logger.info("Size found")
-            size = item_size
-        else:
-            raise Exception
-    except:
-        logger.info("Warning: Size not found for item " + item_url)
-        size = "Not found"
-
-    return size
-
-
-# get the item exp
-def get_item_exp(item_details_table, item_url):
-    try:
-        item_exp = item_details_table.find(text="Loot experience").parent.parent.find('td', {'class': 'va-infobox-content'}).getText()
-        if item_exp is not None and item_exp != "" and item_exp != "\n":
-            logger.info("Exp found")
-            exp = item_exp
-        else:
-            raise Exception
-    except:
-        logger.info("Warning: Exp not found for item " + item_url)
-        exp = "Not found"
-
-    return exp
-
-
 # get the item name
 def get_item_name(item_soup, item_url):
     try:
@@ -99,85 +35,101 @@ def get_item_name(item_soup, item_url):
     return name
 
 
+# get the item type
+def get_item_type(item_details_table, item_url):
+    return generic_get_infos(item_details_table, item_url, "Type")
+
+
+# get the item weight
+def get_item_weight(item_details_table, item_url):
+    return generic_get_infos(item_details_table, item_url, "Weight")
+
+
+# get the item size
+def get_item_size(item_details_table, item_url):
+    return generic_get_infos(item_details_table, item_url, "Grid size")
+
+
+# get the item exp
+def get_item_exp(item_details_table, item_url):
+    return generic_get_infos(item_details_table, item_url, "Loot experience")
+
+
 # get the item description
 def get_item_description(item_soup, item_url):
-    try:
-        item_description = item_soup.find(id="Description").parent.findNext('p').getText()
-        if item_description is not None and item_description != "" and item_description != "\n":
-            logger.info("Description found")
-            description = item_description
-        else:
-            raise Exception
-    except:
-        logger.info("Warning: Description not found for item " + item_url)
-        description = "No description found"
-    
-    return description
+    return generic_get_category(item_soup, item_url, "Description")
 
 
 # get the item locations
 def get_item_locations(item_soup, item_url):
-    locations = []
-    try:
-        images_found = False
-        current_node = item_soup.find(id="Location")
-        if current_node is None:
-            current_node = item_soup.find(id="Spawn_Location")
-        current_node = current_node.parent.find_next_sibling()
+    return generic_get_category(item_soup, item_url, "Location")
 
-        while current_node.name == 'ul' or current_node.name == 'h3' or current_node.name == 'li':  # ul == list of locations, h3 == title/map of locations, li == images of locations
 
-            if current_node.name == 'ul':
-                # search for links in locations, if there is we keep them to display them
-                for children in current_node.findChildren(recursive=False):
-                    location = children.getText()
-                    links = children.find_all('a')
-                    links_dict = {link.getText():link['href'] for link in links}
-                    for text, link in links_dict.items():
-                        location = location.replace(text, '[' + text + '](' + CONST_BASE_URL + link + ')')
-                    locations.append(location)
+# get the item hideout needs
+def get_item_hideouts(item_soup, item_url):
+    return generic_get_category(item_soup, item_url, "Hideout")
 
-            elif current_node.name == 'li' and images_found is False:
-                images_found = True
 
-            current_node = current_node.find_next_sibling()
-
-        if images_found is True:
-            locations.append('Check [wiki page](' + CONST_BASE_URL + item_url + '#Location) for image')
-    except:
-        logger.info("Warning: Locations not found for item " + item_url)
-
-    return locations
+# get the item quests needs
+def get_item_quests(item_soup, item_url):
+    return generic_get_category(item_soup, item_url, "Quests")
 
 
 # get the item notes
 def get_item_notes(item_soup, item_url):
-    notes = []
+    return generic_get_category(item_soup, item_url, "Notes")
+
+
+# generic getter to get all text and links from a category of an item
+def generic_get_category(item_soup, item_url, category_id):
+    infos = []
     try:
-        current_node = item_soup.find(id="Notes").parent.find_next_sibling()
-        while current_node.name == 'ul' or current_node.name == 'p':    # ul == list of notes, p == single note
+        images_found = False
+
+        current_node = item_soup.find(id=category_id).parent.find_next_sibling()
+        while current_node.name == 'ul' or current_node.name == 'h3' or current_node.name == 'li' or current_node.name == 'p':  # ul == list of infos, h3 == title/map of infos, li == images of infos, p == single info
 
             if current_node.name == 'ul':
-                # search for links in notes, if there is we keep them to display them
+                # search for links in infos, if there is we keep them to display them
                 for children in current_node.findChildren(recursive=False):
-                    note = children.getText()
+                    info = children.getText()
                     links = children.find_all('a')
                     links_dict = {link.getText():link['href'] for link in links}
                     for text, link in links_dict.items():
-                        note = note.replace(text, '[' + text + '](' + CONST_BASE_URL + link + ')')
-                    notes.append(note)
-            
+                        info = info.replace(text, '[' + text + '](' + CONST_BASE_URL + link + ')')
+                    infos.append(info)
+
+            elif current_node.name == 'li' and images_found is False:
+                images_found = True
+
             elif current_node.name == 'p':
-                note = current_node.getText()
+                info = current_node.getText()
                 links = current_node.find_all('a')
                 links_dict = {link.getText():link['href'] for link in links}
                 for text, link in links_dict.items():
-                    note = note.replace(text, '[' + text + '](' + CONST_BASE_URL + link + ')')
-                notes.append(note)
+                    info = info.replace(text, '[' + text + '](' + CONST_BASE_URL + link + ')')
+                infos.append(info)
 
             current_node = current_node.find_next_sibling()
-    except:
-        return notes
-    
-    return notes
 
+        if images_found is True:
+            infos.append('Check [wiki page](' + CONST_BASE_URL + item_url + '#' + category_id + ') for image')
+    except:
+        logger.info("Warning: " + category_id + " not found for item " + item_url)
+
+    return infos
+
+
+# generic getter to get all text from the info table of an item
+def generic_get_infos(item_details_table, item_url, info_id):
+    try:
+        item_info = item_details_table.find(text=info_id).parent.parent.find('td', {'class': 'va-infobox-content'}).getText()
+        if item_info is not None and item_info != "" and item_info != "\n":
+            info = item_info
+        else:
+            raise Exception
+    except:
+        logger.info("Warning: " + info_id + " not found for item " + item_url)
+        info = "Not found"
+
+    return info
