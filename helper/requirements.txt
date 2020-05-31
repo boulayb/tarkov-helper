@@ -1,4 +1,5 @@
 elasticsearch
+selenium
 discord
 bs4
 argparse

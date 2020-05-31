@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from bs4 import BeautifulSoup
 from argparse import ArgumentParser
@@ -88,6 +90,9 @@ if __name__ == "__main__":
     logger.info("Sending to elasticsearch")
     es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
     es.bulk(index='tarkov', body=bulk_data)
+
+    # init selenium webdriver
+    driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
 
     logger.info("Done!")
 
