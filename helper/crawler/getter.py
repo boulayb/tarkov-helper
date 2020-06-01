@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from crawler import CONST_BASE_URL, logger
+from PIL import Image
+from io import BytesIO
+from selenium.common.exceptions import NoSuchElementException
+
+from crawler import CONST_BASE_URL, logger, driver
+
+import image_tools
 
 
 # get the item icon
@@ -133,3 +139,40 @@ def generic_get_infos(item_details_table, item_url, info_id):
         info = "Not found"
 
     return info
+
+
+# take screenshot of the trade & craft sections, concat them and upload to s3, save link for ES
+def get_item_trades(item_url):
+
+    # screenshot the crafting section
+    try:
+        crafting_title = driver.find_element_by_id("Crafting")
+        crafting_table = crafting_title.find_element_by_xpath("../following-sibling::table[@class='wikitable']")
+        crafting_screen = crafting_table.screenshot_as_png
+        crafting_screen = Image.open(BytesIO(crafting_screen)) # uses PIL library to open image in memory
+    except:
+        logger.info("Warning: Crafting not found for item " + item_url)
+        crafting_screen = None
+
+    # screenshot the trading section
+    try:
+        trading_title = driver.find_element_by_id("Trading")
+        trading_table = trading_title.find_element_by_xpath("../following-sibling::table[@class='wikitable']")
+        trading_screen = trading_table.screenshot_as_png
+        trading_screen = Image.open(BytesIO(trading_screen)) # uses PIL library to open image in memory
+    except:
+        logger.info("Warning: Trading not found for item " + item_url)
+        trading_screen = None
+
+    # save the screenshot
+    if crafting_screen is not None and trading_screen is not None:
+        image_tools.get_concat_v_resize(crafting_screen, trading_screen, resize_big_image=False).save('crawler/screenshots/' + str(item_url) + '.png') # concat the screenshots
+    elif crafting_screen is not None:
+        crafting_screen.save('crawler/screenshots/' + str(item_url) + '.png')
+    elif trading_screen is not None:
+        trading_screen.save('crawler/screenshots/' + str(item_url) + '.png')
+    
+    # upload to s3
+
+    trades = ''
+    return trades

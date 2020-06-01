@@ -17,6 +17,9 @@ import loot
 CONST_BASE_URL = "https://escapefromtarkov.gamepedia.com"
 CONST_LOOT_GOBLIN = "https://eft-loot.com/page-data/index/page-data.json"
 
+# init selenium webdriver
+driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
+
 # logs init
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -91,10 +94,10 @@ if __name__ == "__main__":
     es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
     es.bulk(index='tarkov', body=bulk_data)
 
-    # init selenium webdriver
-    driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
-
     logger.info("Done!")
+
+    # close selenium webdriver
+    driver.close()
 
     # close log handle
     hdlr.close()

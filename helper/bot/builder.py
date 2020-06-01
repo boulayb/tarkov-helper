@@ -48,7 +48,7 @@ def build_help_embed():
     embed.add_field(name='!command tips', value='Display a usefull tip to help you git gud', inline=False)
 
     embed.add_field(name='Data fetched from:', value='[EFT Wiki](https://escapefromtarkov.gamepedia.com) and [Loot Goblin](https://eft-loot.com/)', inline=False)
-
+    
     return embed
 
 
@@ -99,5 +99,9 @@ def build_item_embed(item):
         if len(item['locations']) > 0:
             locations_str = tools.build_string(item['locations'], item['url'] + "#Location")
             embed.add_field(name='Locations', value=locations_str, inline=False)
+
+        # TRADE & CRAFT TEST
+        if item['name'] == 'Classic matches':
+            embed.set_image(url='https://puu.sh/FRss8/eeeaa34de4.jpg')
 
     return embed

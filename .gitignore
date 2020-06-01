@@ -4,6 +4,9 @@ logs_*
 # Discord token
 *token.py
 
+# Screenshots folder
+screenshots/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
