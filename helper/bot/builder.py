@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from tips import TIPS_LIST
+from settings import *
 
 import tools
 

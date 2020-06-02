@@ -1,25 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from bot_token import TOKEN
+from settings import *
 
 import builder
-
-from elasticsearch import Elasticsearch
-
-import discord
-import logging
-
-client = discord.Client()
-es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
-
-# logs init
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter(fmt='%(asctime)s :: %(levelname)s :: %(message)s')
-hdlr = logging.FileHandler("./logs_bot.txt")
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr)
 
 
 # search item in ES by name and return a list of found items
@@ -87,5 +71,14 @@ async def on_ready():
     await client.change_presence(activity=discord.Game('!command / !co'))
 
 
-if __name__ == "__main__":
+def main():
+
     client.run(TOKEN)
+
+    # close log handle
+    log_hdlr.close()
+    logger.removeHandler(log_hdlr)
+
+
+if __name__ == "__main__":
+    main()

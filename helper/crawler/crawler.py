@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from selenium import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from bs4 import BeautifulSoup
 from argparse import ArgumentParser
@@ -8,26 +6,12 @@ from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
 import json
-import logging
 import requests
 import itertools
 
+from settings import *
+
 import loot
-
-CONST_BASE_URL = "https://escapefromtarkov.gamepedia.com"
-CONST_LOOT_GOBLIN = "https://eft-loot.com/page-data/index/page-data.json"
-
-# init selenium webdriver
-driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
-
-# logs init
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter(fmt='%(asctime)s :: %(levelname)s :: %(message)s')
-hdlr = logging.FileHandler("./logs_crawler.txt")
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr)
 
 
 # retrieve prices from loot goblin for each item
@@ -73,8 +57,7 @@ def to_es_bulk_format(data):
     return bulk
 
 
-if __name__ == "__main__":
-  
+def main():
     ### TODO: add arguments parsing
 
     # result dict
@@ -100,5 +83,9 @@ if __name__ == "__main__":
     driver.close()
 
     # close log handle
-    hdlr.close()
-    logger.removeHandler(hdlr)
+    log_hdlr.close()
+    logger.removeHandler(log_hdlr)
+
+
+if __name__ == "__main__":
+    main()

@@ -6,11 +6,9 @@ from selenium.common.exceptions import NoSuchElementException
 import requests
 import itertools
 
-from crawler import CONST_BASE_URL, logger, driver
+from settings import *
 
 import getter
-
-CONST_LOOT_PAGE = "/Loot"
 
 
 # crawl a single item page to retrieve infos

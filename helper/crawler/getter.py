@@ -4,7 +4,7 @@ from PIL import Image
 from io import BytesIO
 from selenium.common.exceptions import NoSuchElementException
 
-from crawler import CONST_BASE_URL, logger, driver
+from settings import *
 
 import image_tools
 
@@ -141,7 +141,7 @@ def generic_get_infos(item_details_table, item_url, info_id):
     return info
 
 
-# take screenshot of the trade & craft sections, concat them and upload to s3, save link for ES
+# take screenshot of the trade & craft sections, concat them and upload to imgur, save link for ES
 def get_item_trades(item_url):
 
     # screenshot the crafting section
@@ -172,7 +172,7 @@ def get_item_trades(item_url):
     elif trading_screen is not None:
         trading_screen.save('crawler/screenshots/' + str(item_url) + '.png')
     
-    # upload to s3
+    # upload to imgur
 
     trades = ''
     return trades
