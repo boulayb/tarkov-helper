@@ -165,12 +165,16 @@ def get_item_trades(item_url):
         trading_screen = None
 
     # save the screenshot
+    screenshot_location = CONST_SCREENSHOTS_FOLDER + str(item_url) + '.png'
     if crafting_screen is not None and trading_screen is not None:
-        image_tools.get_concat_v_resize(crafting_screen, trading_screen, resize_big_image=False).save('crawler/screenshots/' + str(item_url) + '.png') # concat the screenshots
+        image_tools.get_concat_v_resize(crafting_screen, trading_screen, resize_big_image=False).save(screenshot_location) # concat the screenshots
     elif crafting_screen is not None:
-        crafting_screen.save('crawler/screenshots/' + str(item_url) + '.png')
+        crafting_screen.save(screenshot_location)
     elif trading_screen is not None:
-        trading_screen.save('crawler/screenshots/' + str(item_url) + '.png')
+        trading_screen.save(screenshot_location)
+    else:
+        trades = ''
+        return trades
 
-    trades = ''
+    trades = CONST_SERVER_URL + str(item_url) + '.png'
     return trades
