@@ -26,9 +26,10 @@ TIPS_LIST = [
     'It is all about seeing before being seen.',
     'Don\'t be greedy.',
     'The hideout is a must have investment.',
-    'Allways insure your belongings.',
+    'Always insure your belongings.',
     'Don\'t forget to log in to retrieve your insurances returns.',
     'The price that matters is the price per slot.',
     'As a group, always have a leading leader.',
     'Stay frosty.',
-    'Keep an eye on the clock.']
+    'Keep an eye on the clock.',
+    'Think twice before selling that item']
