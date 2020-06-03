@@ -75,7 +75,9 @@ def main():
     # send to elasticsearch
     logger.info("Sending to elasticsearch")
     es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
-    es.bulk(index='tarkov', body=bulk_data)
+    if es.indices.exists(index=CONST_ES_INDEX) is False:
+        es.indices.create(index=CONST_ES_INDEX)
+    es.bulk(index=CONST_ES_INDEX, body=bulk_data)
 
     logger.info("Done!")
 

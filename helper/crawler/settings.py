@@ -5,6 +5,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 import logging
 
+CONST_ES_INDEX = "tarkov-helper"
 CONST_BASE_URL = "https://escapefromtarkov.gamepedia.com"
 CONST_LOOT_GOBLIN = "https://eft-loot.com/page-data/index/page-data.json"
 
