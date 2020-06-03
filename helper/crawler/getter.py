@@ -171,8 +171,6 @@ def get_item_trades(item_url):
         crafting_screen.save('crawler/screenshots/' + str(item_url) + '.png')
     elif trading_screen is not None:
         trading_screen.save('crawler/screenshots/' + str(item_url) + '.png')
-    
-    # upload to imgur
 
     trades = ''
     return trades

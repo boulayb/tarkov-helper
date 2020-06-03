@@ -80,7 +80,7 @@ def main():
     logger.info("Done!")
 
     # close selenium webdriver
-    driver.close()
+    driver.quit()
 
     # close log handle
     log_hdlr.close()

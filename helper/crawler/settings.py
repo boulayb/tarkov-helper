@@ -7,6 +7,7 @@ import logging
 
 CONST_BASE_URL = "https://escapefromtarkov.gamepedia.com"
 CONST_LOOT_GOBLIN = "https://eft-loot.com/page-data/index/page-data.json"
+
 CONST_LOOT_PAGE = "/Loot"
 
 
@@ -27,9 +28,6 @@ def init():
 
     # init selenium webdriver
     driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
-
-    # imgur login
-    # imgur_client = imgur.imgur_login()
 
 
 init()

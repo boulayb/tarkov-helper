@@ -101,8 +101,7 @@ def build_item_embed(item):
             locations_str = tools.build_string(item['locations'], item['url'] + "#Location")
             embed.add_field(name='Locations', value=locations_str, inline=False)
 
-        # TRADE & CRAFT TEST
-        if item['name'] == 'Classic matches':
-            embed.set_image(url='https://puu.sh/FRss8/eeeaa34de4.jpg')
+        if item['trades']:
+            embed.set_image(url=item['trades'])
 
     return embed

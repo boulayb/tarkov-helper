@@ -49,6 +49,9 @@ def crawl_loot_item(item_url):
     item_data['hideouts'] = getter.get_item_hideouts(item_soup, item_url)
     item_data['trades'] = getter.get_item_trades(item_url)
 
+    # clean beautifulsoup parser
+    item_soup.decompose()
+
     return item_data
 
 
@@ -76,5 +79,8 @@ def crawl_loot():
             link = loot_name['href']
             name = loot_name.getText()
             loot_data[name] = crawl_loot_item(link)
+    
+    # clean beautifulsoup parser
+    loot_soup.decompose()
 
     return loot_data
