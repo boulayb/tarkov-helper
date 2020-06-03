@@ -35,7 +35,8 @@ async def on_message(message):
 
     if message.content.startswith('!command') or message.content.startswith('!co'):
         logger.info("From: '" + str(message.author) + "' - '" + message.content + "'")
-        words = message.content.split(' ')
+        cleaned_message = ' '.join(message.content.split(' '))
+        words = cleaned_message.split(' ')
         embeds = []
 
         if len(words) > 1 and words[1] == 'item':
@@ -48,7 +49,7 @@ async def on_message(message):
             else:
                 embeds.append(builder.build_item_embed(None))
         
-        elif len(words) > 1 and words[1] == 'tips':
+        elif len(words) > 1 and (words[1] == 'tips' or words[1] == 'tip'):
             embeds.append(builder.build_tips_embed())
 
         else:
