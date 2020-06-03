@@ -1,2 +1,2 @@
-FROM selenium/standalone-firefox:latest
+FROM selenium/standalone-opera:latest
 EXPOSE 4444

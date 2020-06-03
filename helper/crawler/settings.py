@@ -27,7 +27,7 @@ def init():
     logger.addHandler(log_hdlr)
 
     # init selenium webdriver
-    driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
+    driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.OPERA)
 
 
 init()
