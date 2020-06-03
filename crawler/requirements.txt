@@ -1,7 +1,6 @@
 elasticsearch
 selenium
 pillow
-discord
 bs4
 argparse
 requests

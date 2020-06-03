@@ -18,16 +18,26 @@ services:
       - deploy_network
     container_name: elasticsearch
 
-  helper:
-    build: helper/
+  bot:
+    build: bot/
     volumes:
-      - ./helper:/app
+      - ./bot:/app
+    depends_on:
+      - elasticsearch
+    networks:
+      - deploy_network
+    container_name: bot
+
+  crawler:
+    build: crawler/
+    volumes:
+      - ./crawler:/app
     depends_on:
       - elasticsearch
       - webdriver
     networks:
       - deploy_network
-    container_name: helper
+    container_name: crawler
 
 networks:
   deploy_network:
