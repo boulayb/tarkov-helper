@@ -41,10 +41,10 @@ async def on_message(message):
 
         if len(words) > 1 and words[1] == 'item':
             item_name = ' '.join(words[2:])
-            result = search_item(words[2])
+            result = search_item(item_name)
             if len(result['items']) > 0:
                 if result['total'] > len(result['items']):
-                    embeds.append(builder.build_too_many_embed(result['total'], words[2]))
+                    embeds.append(builder.build_too_many_embed(result['total'], item_name))
                 for item in result['items']:
                     embeds.append(builder.build_item_embed(item))
             else:
