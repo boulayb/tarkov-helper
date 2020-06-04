@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# from selenium import webdriver
-# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
 import logging
 
 CONST_ES_INDEX = "tarkov-helper"
@@ -18,7 +15,6 @@ def init():
 
     global log_hdlr
     global logger
-    # global driver
 
     # logs init
     logging.basicConfig(level=logging.INFO)
@@ -28,9 +24,6 @@ def init():
     log_hdlr = logging.FileHandler("./logs_crawler.txt")
     log_hdlr.setFormatter(formatter)
     logger.addHandler(log_hdlr)
-
-    # # init selenium webdriver
-    # driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
 
 
 init()
