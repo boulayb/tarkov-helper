@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from selenium import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+# from selenium import webdriver
+# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 import logging
 
@@ -18,7 +18,7 @@ def init():
 
     global log_hdlr
     global logger
-    global driver
+    # global driver
 
     # logs init
     logging.basicConfig(level=logging.INFO)
@@ -29,8 +29,8 @@ def init():
     log_hdlr.setFormatter(formatter)
     logger.addHandler(log_hdlr)
 
-    # init selenium webdriver
-    driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
+    # # init selenium webdriver
+    # driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
 
 
 init()

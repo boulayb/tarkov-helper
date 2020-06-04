@@ -82,7 +82,7 @@ def main():
     logger.info("Done!")
 
     # close selenium webdriver
-    driver.quit()
+    # driver.quit()
 
     # close log handle
     log_hdlr.close()

@@ -2,7 +2,9 @@
 
 from PIL import Image
 from io import BytesIO
-from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 from settings import *
 
@@ -142,14 +144,20 @@ def generic_get_infos(item_details_table, item_url, info_id):
 
 
 # take screenshot of the trade & craft sections, concat them and upload to imgur, save link for ES
-def get_item_trades(item_url):
+def get_item_trades(item_url, driver):
+    try:
+        popup = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, "//*[text()='ACCEPT']"))) # wait 3 seconds for page to load and click the page cookie popup so it doesn't hide the screenshots
+        popup.click()
+    except Exception as e:
+        logger.info(e)
+        pass
 
     # screenshot the crafting section
     try:
         crafting_title = driver.find_element_by_id("Crafting")
         crafting_table = crafting_title.find_element_by_xpath("../following-sibling::table[@class='wikitable']")
         crafting_screen = crafting_table.screenshot_as_png
-        crafting_screen = Image.open(BytesIO(crafting_screen)) # uses PIL library to open image in memory
+        crafting_screen = Image.open(BytesIO(crafting_screen))  # uses PIL library to open image in memory
     except:
         logger.info("Warning: Crafting not found for item " + item_url)
         crafting_screen = None
@@ -159,7 +167,7 @@ def get_item_trades(item_url):
         trading_title = driver.find_element_by_id("Trading")
         trading_table = trading_title.find_element_by_xpath("../following-sibling::table[@class='wikitable']")
         trading_screen = trading_table.screenshot_as_png
-        trading_screen = Image.open(BytesIO(trading_screen)) # uses PIL library to open image in memory
+        trading_screen = Image.open(BytesIO(trading_screen))    # uses PIL library to open image in memory
     except:
         logger.info("Warning: Trading not found for item " + item_url)
         trading_screen = None
@@ -167,7 +175,7 @@ def get_item_trades(item_url):
     # save the screenshot
     screenshot_location = CONST_SCREENSHOTS_FOLDER + str(item_url) + '.png'
     if crafting_screen is not None and trading_screen is not None:
-        image_tools.get_concat_v_resize(crafting_screen, trading_screen, resize_big_image=False).save(screenshot_location) # concat the screenshots
+        image_tools.get_concat_v_resize(crafting_screen, trading_screen, resize_big_image=False).save(screenshot_location)  # concat the screenshots
     elif crafting_screen is not None:
         crafting_screen.save(screenshot_location)
     elif trading_screen is not None:

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
-from selenium.common.exceptions import NoSuchElementException
+from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 import requests
 import itertools
@@ -26,11 +27,8 @@ def crawl_loot_item(item_url):
     item_soup = BeautifulSoup(item_html, 'html.parser')
 
     # open page via webdriver
+    driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
     driver.get(CONST_BASE_URL + item_url)
-    try:
-        driver.find_element_by_xpath("//*[text()='ACCEPT']").click() # click the page cookie popup so it doesn't hide the screenshots
-    except NoSuchElementException:
-        pass
 
     # get the item details table
     item_details_table = item_soup.find(id='va-infobox0-content') # should be unique
@@ -47,10 +45,11 @@ def crawl_loot_item(item_url):
     item_data['notes'] = getter.get_item_notes(item_soup, item_url)
     item_data['quests'] = getter.get_item_quests(item_soup, item_url)
     item_data['hideouts'] = getter.get_item_hideouts(item_soup, item_url)
-    item_data['trades'] = getter.get_item_trades(item_url)
+    item_data['trades'] = getter.get_item_trades(item_url, driver)
 
-    # clean beautifulsoup parser
+    # clean beautifulsoup parser and close webdriver page
     item_soup.decompose()
+    driver.close()
 
     return item_data
 
