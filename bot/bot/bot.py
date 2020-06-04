@@ -40,6 +40,7 @@ async def on_message(message):
         embeds = []
 
         if len(words) > 1 and words[1] == 'item':
+            item_name = ' '.join(words[2:])
             result = search_item(words[2])
             if len(result['items']) > 0:
                 if result['total'] > len(result['items']):
