@@ -12,7 +12,7 @@ def search_item(item):
 
     items = []
 
-    search = es.search(body={"query": {"query_string": {"default_field": "name", "query": "*" + item + "*"}}}, index='tarkov', size=3)
+    search = es.search(body={"query": {"query_string": {"default_field": "name", "query": "*\"" + item + "\"*"}}}, index='tarkov', size=3)
     total = search['hits']['total']
     if total > 0:
         for hit in search['hits']['hits']:
