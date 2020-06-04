@@ -2,8 +2,10 @@
 
 import logging
 
+CONST_SELENIUM_DELAY = 1
 CONST_ES_INDEX = "tarkov-helper"
 CONST_SCREENSHOTS_FOLDER = "crawler/screenshots"
+
 CONST_SERVER_URL = "http://vps-31da28b6.vps.ovh.net/"
 CONST_BASE_URL = "https://escapefromtarkov.gamepedia.com"
 CONST_LOOT_GOBLIN = "https://eft-loot.com/page-data/index/page-data.json"

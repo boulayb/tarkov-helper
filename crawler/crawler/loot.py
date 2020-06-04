@@ -22,7 +22,6 @@ def crawl_loot_item(item_url):
     r.raise_for_status()
 
     # init beautifulsoup parser
-    logger.info("Init Beautifulsoup")
     item_html = r.text
     item_soup = BeautifulSoup(item_html, 'html.parser')
 
@@ -64,13 +63,11 @@ def crawl_loot():
     r.raise_for_status()
 
     # init beautifulsoup parser
-    logger.info("Init Beautifulsoup")
     loot_html = r.text
     loot_soup = BeautifulSoup(loot_html, 'html.parser')
 
     # get the loot table
     loot_table = loot_soup.find('table', {'class': 'wikitable'}).find_all("tr")
-    logger.info("Getting loot table infos")
     for loot_item in itertools.islice(loot_table, 1, None): # each row of the table is a loot item, except first one (titles)
         loot_infos = loot_item.find_all("th")   # 0=icon, 1=name+link, 2=type, 3=notes
         loot_name = loot_infos[1].find("a")

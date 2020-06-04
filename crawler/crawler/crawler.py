@@ -24,7 +24,6 @@ def crawl_prices(data):
     goblin_json = json.loads(r.text)
     items_list = goblin_json['result']['data']['allDataJson']['nodes']
 
-    logger.info("Getting prices from goblin list")
     for item in items_list:
         item_name = item['name']
         item_price = item['price_avg']
@@ -80,9 +79,6 @@ def main():
     es.bulk(index=CONST_ES_INDEX, body=bulk_data)
 
     logger.info("Done!")
-
-    # close selenium webdriver
-    # driver.quit()
 
     # close log handle
     log_hdlr.close()

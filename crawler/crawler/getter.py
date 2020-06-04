@@ -16,7 +16,6 @@ def get_item_icon(item_soup, item_url):
     try:
         item_icon = item_soup.find('td', {'class': 'va-infobox-icon'}).find('img')['src']
         if item_icon is not None and item_icon != "" and item_icon != "\n":
-            logger.info("Icon found")
             icon = item_icon
         else:
             raise Exception
@@ -32,7 +31,6 @@ def get_item_name(item_soup, item_url):
     try:
         item_name = item_soup.find(id='firstHeading').getText()
         if item_name is not None and item_name != "" and item_name != "\n":
-            logger.info("Name found")
             name = item_name
         else:
             raise Exception
@@ -146,11 +144,12 @@ def generic_get_infos(item_details_table, item_url, info_id):
 # take screenshot of the trade & craft sections, concat them and upload to imgur, save link for ES
 def get_item_trades(item_url, driver):
     try:
-        popup = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, "//*[text()='ACCEPT']"))) # wait 3 seconds for page to load and click the page cookie popup so it doesn't hide the screenshots
-        popup.click()
-    except Exception as e:
-        logger.info(e)
-        pass
+        popup = WebDriverWait(driver, CONST_SELENIUM_DELAY).until(EC.presence_of_element_located((By.XPATH, "//*[text()='ACCEPT']")))   # wait x seconds for page to load
+        popup.click()   # click the page cookie popup so it doesn't hide the screenshots
+    except:
+        logger.info("Warning: Selenium couldn't parse the page for item " + item_url)
+        trades = ''
+        return trades
 
     # screenshot the crafting section
     try:
