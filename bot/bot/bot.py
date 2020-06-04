@@ -35,7 +35,7 @@ async def on_message(message):
 
     if message.content.startswith('!command') or message.content.startswith('!co'):
         logger.info("From: '" + str(message.author) + "' - '" + message.content + "'")
-        cleaned_message = ' '.join(message.content.split(' '))
+        cleaned_message = ' '.join(message.content.split())
         words = cleaned_message.split(' ')
         embeds = []
 
