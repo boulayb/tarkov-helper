@@ -45,10 +45,12 @@ def build_help_embed():
     embed.set_thumbnail(url='https://gamepedia.cursecdn.com/escapefromtarkov_gamepedia/7/7d/Skill_mental_charisma.png?version=9d52bcf9bcd3a30e562b3327513a8709')
     embed.set_footer(text='By Redleouf - contact: redleouf@gmail.com')
 
-    embed.add_field(name='!command item [YOUR ITEM]', value='Display informations about the searched item', inline=False)
-    embed.add_field(name='!command tips', value='Display a usefull tip to help you git gud', inline=False)
+    embed.add_field(name='!command item [YOUR ITEM]', value='Display informations about the searched item. Open original trade/craft image in webbrowser for full list.', inline=False)
+    embed.add_field(name='!command tips', value='Display a usefull tip to help you git gud.', inline=False)
 
     embed.add_field(name='Data fetched from:', value='[EFT Wiki](https://escapefromtarkov.gamepedia.com) and [Loot Goblin](https://eft-loot.com/)', inline=False)
+
+    embed.add_field(name='Donation:', value='If you like this project, feel free to donate by clicking [here](https://paypal.me/boulayb). It helps me pay for the server!', inline=False)
     
     return embed
 
@@ -58,8 +60,8 @@ def build_item_embed(item):
 
     if item is None:
         embed = discord.Embed(
-            title='',
-            description='Sorry chief, nothing found for that research.',
+            title='Sorry chief, nothing found for that research.',
+            description='',
             colour=discord.Colour.blue()
         )
 
@@ -78,7 +80,10 @@ def build_item_embed(item):
         )
 
         embed.set_thumbnail(url=item['icon'])
-        embed.set_footer(text='Click title for more infos - Last price update: ' + tools.days_since(tools.convert_date(item['price_date'])))
+        if 'price_date' in item:
+            embed.set_footer(text='Click title for more infos - Last price update: ' + tools.days_since(tools.convert_date(item['price_date'])))
+        else:
+            embed.set_footer(text='Click title for more infos')
 
         if len(item['notes']) > 0:
             notes_str = tools.build_string(item['notes'], item['url'] + "#Notes")
@@ -87,12 +92,15 @@ def build_item_embed(item):
         embed.add_field(name='Size', value=item['size'], inline=True)
         embed.add_field(name='Weight', value=item['weight'], inline=True)
         embed.add_field(name='Exp on loot', value=item['exp'] + '\n', inline=True) # "\u200b" to add a blank line
-        embed.add_field(name='Avg. price', value=str(item['price']) + ' ₽', inline=True)
-        embed.add_field(name='Avg. price/slot', value=str(item['price_slot']) + ' ₽', inline=True)
+
+        if 'price' in item and 'price_slot' in item:
+            embed.add_field(name='Avg. price', value=str(item['price']) + ' ₽', inline=True)
+            embed.add_field(name='Avg. price/slot', value=str(item['price_slot']) + ' ₽', inline=True)
 
         if len(item['quests']) > 0:
             quests_str = tools.build_string(item['quests'], item['url'] + "#Quests")
             embed.add_field(name='Quests', value=quests_str, inline=False)
+
         if len(item['hideouts']) > 0:
             hideouts_str = tools.build_string(item['hideouts'], item['url'] + "#Hideout")
             embed.add_field(name='Hideouts', value=hideouts_str, inline=False)
