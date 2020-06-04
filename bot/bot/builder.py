@@ -45,12 +45,12 @@ def build_help_embed():
     embed.set_thumbnail(url='https://gamepedia.cursecdn.com/escapefromtarkov_gamepedia/7/7d/Skill_mental_charisma.png?version=9d52bcf9bcd3a30e562b3327513a8709')
     embed.set_footer(text='By Redleouf - contact: redleouf@gmail.com')
 
-    embed.add_field(name='!command item [YOUR ITEM]', value='Display informations about the searched item. Open original trade/craft image in webbrowser for full list.', inline=False)
+    embed.add_field(name='!command item [YOUR ITEM]', value='Display informations about the searched item.\nOpen original trade/craft image in webbrowser for full list.', inline=False)
     embed.add_field(name='!command tips', value='Display a usefull tip to help you git gud.', inline=False)
 
     embed.add_field(name='Data fetched from:', value='[EFT Wiki](https://escapefromtarkov.gamepedia.com) and [Loot Goblin](https://eft-loot.com/)', inline=False)
 
-    embed.add_field(name='Donation:', value='If you like this project, feel free to donate by clicking [here](https://paypal.me/boulayb). It helps me pay for the server!', inline=False)
+    embed.add_field(name='Donation:', value='If you like this project, feel free to donate by clicking [here](https://paypal.me/boulayb).\nIt helps me pay for the server!', inline=False)
     
     return embed
 
