@@ -7,16 +7,27 @@ import builder
 
 
 # search item in ES by name and return a list of found items
-def search_item(item):
+def search_item(item, advanced=False):
     logger.info("Searching for item: " + item)
 
     items = []
+    total = 0
 
-    search = es.search(body={"query": {"query_string": {"default_field": "name", "query": "*\"" + item + "\"*"}}}, index='tarkov', size=3)
-    total = search['hits']['total']
-    if total > 0:
-        for hit in search['hits']['hits']:
-            items.append(hit['_source'])
+    # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
+    try:
+        if ' ' in item:
+            search = es.search(body={"query": {"query_string": {"default_field": "name", "query": "\"" + item + "\""}}}, index='tarkov', size=3)    # for a full sentence, search with double quotes
+        elif advanced is True:
+            search = es.search(body={"query": {"query_string": {"default_field": "name", "query": item}}}, index='tarkov', size=3)                  # for an advanced search, let the user build the query string
+        else:
+            search = es.search(body={"query": {"query_string": {"default_field": "name", "query": "*" + item + "*"}}}, index='tarkov', size=3)      # for a single word, search with wildcards
+
+        total = search['hits']['total']
+        if total > 0:
+            for hit in search['hits']['hits']:
+                items.append(hit['_source'])
+    except:
+        logger.info("Warning: Elasticsearch failed to search query: " + item)
 
     result = {'total': total, 'items': items}
 
@@ -50,6 +61,17 @@ async def on_message(message):
             else:
                 embeds.append(builder.build_item_embed(None))
         
+        elif len(words) > 1 and words[1] == 'search':
+            item_name = ' '.join(words[2:])
+            result = search_item(item_name, advanced=True)
+            if len(result['items']) > 0:
+                if result['total'] > len(result['items']):
+                    embeds.append(builder.build_too_many_embed(result['total'], item_name))
+                for item in result['items']:
+                    embeds.append(builder.build_item_embed(item))
+            else:
+                embeds.append(builder.build_item_embed(None))
+
         elif len(words) > 1 and (words[1] == 'tips' or words[1] == 'tip'):
             embeds.append(builder.build_tips_embed())
 
