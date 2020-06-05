@@ -13,7 +13,7 @@ import discord
 def build_too_many_embed(total, name):
 
     embed = discord.Embed(
-        title="I found " + str(total) + " results for '" + name + "'. Here is only 3, be more precise.",
+        title="I found " + str(total) + " results for '" + name + "'. Here is only 3, be more precise or use the 'list' command.",
         description='',
         colour=discord.Colour.blue()
     )
@@ -47,12 +47,41 @@ def build_help_embed():
 
     embed.add_field(name='!command item [YOUR ITEM]', value='Display informations about the searched item.\nOpen original trade/craft image in webbrowser for full list.', inline=False)
     embed.add_field(name='!command search [YOUR ITEM]', value='Same as the item command but with advanced search features.\nClick [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) to learn more.', inline=False)
+    embed.add_field(name='!command list [YOUR ITEM]', value='Advanced search returning the full list of results names.\nClick [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) to learn more.', inline=False)
     embed.add_field(name='!command tips', value='Display a usefull tip to help you git gud.', inline=False)
 
     embed.add_field(name='Data fetched from:', value='[EFT Wiki](https://escapefromtarkov.gamepedia.com) and [Loot Goblin](https://eft-loot.com/)', inline=False)
 
     embed.add_field(name='Donation:', value='If you like this project, feel free to donate by clicking [here](https://paypal.me/boulayb).\nIt helps me pay for the server!', inline=False)
     
+    return embed
+
+
+# format an embeds list to list items names
+def build_list_embeds(items, query):
+
+    if len(items) == 0:
+        embed = discord.Embed(
+            title='Sorry chief, nothing found for that research.',
+            description='',
+            colour=discord.Colour.blue()
+        )
+
+    else:
+        list_of_names = ""
+
+        for item in items:
+            line = '[**' + item['name'] + '**](' + item['url'] + ')'
+            list_of_names += line
+            list_of_names += '\n'
+
+        embed = discord.Embed(
+            colour=discord.Colour.blue()
+        )
+      
+        embed.add_field(name='', value=list_of_names, inline=False)
+        embed.set_footer(text='Click name for more infos')
+
     return embed
 
 

@@ -5,6 +5,9 @@ from elasticsearch import Elasticsearch
 import discord
 import logging
 
+CONST_ES_RESULT_SIZE = 3
+CONST_ES_INDEX = "tarkov-helper"
+
 
 def init():
 

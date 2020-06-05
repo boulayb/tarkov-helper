@@ -7,7 +7,7 @@ import builder
 
 
 # search item in ES by name and return a list of found items
-def search_item(item, advanced=False):
+def search_item(item, res_size=CONST_ES_RESULT_SIZE, advanced=False):
     logger.info("Searching for item: " + item)
 
     items = []
@@ -16,11 +16,11 @@ def search_item(item, advanced=False):
     # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
     try:
         if ' ' in item:
-            search = es.search(body={"query": {"query_string": {"default_field": "name", "query": "\"" + item + "\""}}}, index='tarkov', size=3)    # for a full sentence, search with double quotes
+            search = es.search(body={"query": {"query_string": {"default_field": "name", "query": "\"" + item + "\""}}}, index=CONST_ES_INDEX, size=res_size)    # for a full sentence, search with double quotes
         elif advanced is True:
-            search = es.search(body={"query": {"query_string": {"default_field": "name", "query": item}}}, index='tarkov', size=3)                  # for an advanced search, let the user build the query string
+            search = es.search(body={"query": {"query_string": {"default_field": "name", "query": item}}}, index=CONST_ES_INDEX, size=res_size)                  # for an advanced search, let the user build the query string
         else:
-            search = es.search(body={"query": {"query_string": {"default_field": "name", "query": "*" + item + "*"}}}, index='tarkov', size=3)      # for a single word, search with wildcards
+            search = es.search(body={"query": {"query_string": {"default_field": "name", "query": "*" + item + "*"}}}, index=CONST_ES_INDEX, size=res_size)      # for a single word, search with wildcards
 
         total = search['hits']['total']
         if total > 0:
@@ -51,26 +51,34 @@ async def on_message(message):
         embeds = []
 
         if len(words) > 1 and words[1] == 'item':
-            item_name = ' '.join(words[2:])
-            result = search_item(item_name)
+            search_query = ' '.join(words[2:]) # rejoin the user query with space
+            result = search_item(search_query)
             if len(result['items']) > 0:
                 if result['total'] > len(result['items']):
-                    embeds.append(builder.build_too_many_embed(result['total'], item_name))
+                    embeds.append(builder.build_too_many_embed(result['total'], search_query))
                 for item in result['items']:
                     embeds.append(builder.build_item_embed(item))
             else:
                 embeds.append(builder.build_item_embed(None))
         
         elif len(words) > 1 and words[1] == 'search':
-            item_name = ' '.join(words[2:])
-            result = search_item(item_name, advanced=True)
+            search_query = ' '.join(words[2:]) # rejoin the user query with space
+            result = search_item(search_query, advanced=True)
             if len(result['items']) > 0:
                 if result['total'] > len(result['items']):
-                    embeds.append(builder.build_too_many_embed(result['total'], item_name))
+                    embeds.append(builder.build_too_many_embed(result['total'], search_query))
                 for item in result['items']:
                     embeds.append(builder.build_item_embed(item))
             else:
                 embeds.append(builder.build_item_embed(None))
+
+        ### TODO:   This needs to return a list of embeds
+        ###         limit is 1024 for field and 6000 for the full embed
+        ###         use ES 'scroll' system
+        # elif len(words) > 1 and words[1] == 'list':
+        #     search_query = ' '.join(words[2:]) # rejoin the user query with space
+        #     result = search_item(search_query, res_size=50, advanced=True)
+        #     embeds.append(builder.build_list_embeds(result['items'], search_query))
 
         elif len(words) > 1 and (words[1] == 'tips' or words[1] == 'tip'):
             embeds.append(builder.build_tips_embed())

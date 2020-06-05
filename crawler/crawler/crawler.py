@@ -48,7 +48,7 @@ def to_es_bulk_format(data):
 
     for category_type, category in data.items():
         for obj_type, obj in category.items():
-            index = {'index': {'_index': 'tarkov', '_type': category_type, '_id': obj_type}}
+            index = {'index': {'_index': CONST_ES_INDEX, '_type': category_type, '_id': obj_type}}
             document = obj
             bulk.append(index)
             bulk.append(document)
