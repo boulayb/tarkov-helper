@@ -68,18 +68,23 @@ def build_list_embeds(items, query):
         )
 
     else:
-        list_of_names = ""
+        list_of_names = []
 
         for item in items:
             line = '[**' + item['name'] + '**](' + item['url'] + ')'
-            list_of_names += line
-            list_of_names += '\n'
+            list_of_names.append(line)
 
         embed = discord.Embed(
             colour=discord.Colour.blue()
         )
-      
-        embed.add_field(name='', value=list_of_names, inline=False)
+
+        # embed char limit is 1024 so we must build many until no text is left
+        build_res = tools.build_string(list_of_names, "", False)
+        while build_res["rest_str"] is not None:
+            embed.add_field(name='Result list:', value=build_res["embed_str"], inline=False)
+            build_res = tools.build_string(build_res["rest_str"].split('\n- ')[1:], "", False)  # .split('\n- ')[1:] to remove the first empty '-' because of how shitty tools.build_string() is made
+        embed.add_field(name='Result list:', value=build_res["embed_str"], inline=False)
+
         embed.set_footer(text='Click name for more infos')
 
     return embed
@@ -116,7 +121,7 @@ def build_item_embed(item):
             embed.set_footer(text='Click title for more infos')
 
         if len(item['notes']) > 0:
-            notes_str = tools.build_string(item['notes'], item['url'] + "#Notes")
+            notes_str = tools.build_string(item['notes'], item['url'] + "#Notes")['embed_str']
             embed.add_field(name='Notes', value=notes_str, inline=False)
 
         embed.add_field(name='Size', value=item['size'], inline=True)
@@ -128,15 +133,15 @@ def build_item_embed(item):
             embed.add_field(name='Avg. price/slot', value=str(item['price_slot']) + ' ₽', inline=True)
 
         if len(item['quests']) > 0:
-            quests_str = tools.build_string(item['quests'], item['url'] + "#Quests")
+            quests_str = tools.build_string(item['quests'], item['url'] + "#Quests")['embed_str']
             embed.add_field(name='Quests', value=quests_str, inline=False)
 
         if len(item['hideouts']) > 0:
-            hideouts_str = tools.build_string(item['hideouts'], item['url'] + "#Hideout")
+            hideouts_str = tools.build_string(item['hideouts'], item['url'] + "#Hideout")['embed_str']
             embed.add_field(name='Hideouts', value=hideouts_str, inline=False)
 
         if len(item['locations']) > 0:
-            locations_str = tools.build_string(item['locations'], item['url'] + "#Location")
+            locations_str = tools.build_string(item['locations'], item['url'] + "#Location")['embed_str']
             embed.add_field(name='Locations', value=locations_str, inline=False)
 
         if item['trades']:

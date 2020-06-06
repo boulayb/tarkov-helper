@@ -26,12 +26,23 @@ def convert_date(date):
 
 
 # build an embed string from a list of strings
-def build_string(string_list, item_url):
-    embed_str = '- ' + '\n- '.join(string_list)   # one string per line
-    if len(embed_str) > 1024:   # one field can only contain a maximum of 1024 characters
-        see_more = "\n- See the remainings [here](" + item_url + ")" 
-        last_line = embed_str[:1024-len(see_more)].rfind('\n')
-        embed_str = embed_str[:last_line]
-        embed_str += see_more
+def build_string(string_list, item_url, see_more=True):
 
-    return embed_str
+    rest_str = None
+    embed_str = '- ' + '\n- '.join(string_list)   # one string per line
+
+    if len(embed_str) > 1024:   # one field can only contain a maximum of 1024 characters
+        if see_more is True:
+            see_more_str = "\n- See the remainings [here](" + item_url + ")"
+            last_line = embed_str[:1024-len(see_more_str)].rfind('\n')
+            rest_str = embed_str[last_line:]
+            embed_str = embed_str[:last_line]
+            embed_str += see_more_str
+        else:
+            last_line = embed_str[:1024].rfind('\n')
+            rest_str = embed_str[last_line:]
+            embed_str = embed_str[:last_line]
+
+    result = {"embed_str": embed_str, "rest_str": rest_str}
+
+    return result

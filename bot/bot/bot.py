@@ -4,39 +4,10 @@ from bot_token import TOKEN
 from settings import *
 
 import builder
-
-
-# search item in ES by name and return a list of found items
-def search_item(item, res_size=CONST_ES_RESULT_SIZE, advanced=False):
-    logger.info("Searching for item: " + item)
-
-    items = []
-    total = 0
-
-    # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
-    try:
-        if ' ' in item:
-            search = es.search(body={"query": {"query_string": {"default_field": "name", "query": "\"" + item + "\""}}}, index=CONST_ES_INDEX, size=res_size)    # for a full sentence, search with double quotes
-        elif advanced is True:
-            search = es.search(body={"query": {"query_string": {"default_field": "name", "query": item}}}, index=CONST_ES_INDEX, size=res_size)                  # for an advanced search, let the user build the query string
-        else:
-            search = es.search(body={"query": {"query_string": {"default_field": "name", "query": "*" + item + "*"}}}, index=CONST_ES_INDEX, size=res_size)      # for a single word, search with wildcards
-
-        total = search['hits']['total']
-        if total > 0:
-            for hit in search['hits']['hits']:
-                items.append(hit['_source'])
-    except:
-        logger.info("Warning: Elasticsearch failed to search query: " + item)
-
-    result = {'total': total, 'items': items}
-
-    logger.info("Found " + str(total) + " items, returning " + str(len(items)))
-    return result
+import search
 
 
 # format should be "!command KEYWORD ITEM"
-# KEYWORD can be 'tips', 'item', 'craft', 'trade', 'spawn', 'map'...
 @client.event
 async def on_message(message):
 
@@ -50,9 +21,10 @@ async def on_message(message):
         words = cleaned_message.split(' ')
         embeds = []
 
+        # ITEM command
         if len(words) > 1 and words[1] == 'item':
             search_query = ' '.join(words[2:]) # rejoin the user query with space
-            result = search_item(search_query)
+            result = search.search_item(search_query)
             if len(result['items']) > 0:
                 if result['total'] > len(result['items']):
                     embeds.append(builder.build_too_many_embed(result['total'], search_query))
@@ -60,10 +32,11 @@ async def on_message(message):
                     embeds.append(builder.build_item_embed(item))
             else:
                 embeds.append(builder.build_item_embed(None))
-        
+
+        # SEARCH command
         elif len(words) > 1 and words[1] == 'search':
             search_query = ' '.join(words[2:]) # rejoin the user query with space
-            result = search_item(search_query, advanced=True)
+            result = search.search_item(search_query, advanced=True)
             if len(result['items']) > 0:
                 if result['total'] > len(result['items']):
                     embeds.append(builder.build_too_many_embed(result['total'], search_query))
@@ -72,17 +45,19 @@ async def on_message(message):
             else:
                 embeds.append(builder.build_item_embed(None))
 
-        ### TODO:   This needs to return a list of embeds
-        ###         limit is 1024 for field and 6000 for the full embed
-        ###         use ES 'scroll' system
-        # elif len(words) > 1 and words[1] == 'list':
-        #     search_query = ' '.join(words[2:]) # rejoin the user query with space
-        #     result = search_item(search_query, res_size=50, advanced=True)
-        #     embeds.append(builder.build_list_embeds(result['items'], search_query))
+        # LIST command
+        elif len(words) > 1 and words[1] == 'list':
+            search_query = ' '.join(words[2:]) # rejoin the user query with space
+            result = search.search_item(search_query, res_size=50, advanced=True, scroll_time='10s')
+            while len(result['items']) > 0:
+                embeds.append(builder.build_list_embeds(result['items'], search_query))
+                result = search.scroll_item(result['scroll_id'], scroll_time='10s')
 
+        # TIP command
         elif len(words) > 1 and (words[1] == 'tips' or words[1] == 'tip'):
             embeds.append(builder.build_tips_embed())
 
+        # UNKNOWN command
         else:
             embeds.append(builder.build_help_embed())
 
