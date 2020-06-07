@@ -47,6 +47,7 @@ def crawl_prices_tarkov_market(data):
         item_trader_name = item['traderName'] if 'traderName' in item else ''
         item_trader_price = item['traderPrice'] if 'traderPrice' in item else ''
         item_price_date = item['priceUpdated'] if 'priceUpdated' in item else ''
+        item_is_worth_resell = True if (item_price_day != '' and item_trader_price != '') and (int(item_price_day) <= int(item_trader_price)) else False
 
         if item_name in data['loot']:
             data['loot'][item_name]['price_day'] = item_price_day
@@ -58,6 +59,7 @@ def crawl_prices_tarkov_market(data):
             data['loot'][item_name]['trader_name'] = item_trader_name
             data['loot'][item_name]['trader_price'] = item_trader_price
             data['loot'][item_name]['price_date'] = item_price_date
+            data['loot'][item_name]['worth_resell'] = item_is_worth_resell
         else:
             logger.info("Warning: Price not added, no object found for item " + item_name)
     
