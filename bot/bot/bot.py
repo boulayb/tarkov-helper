@@ -25,7 +25,9 @@ async def on_message(message):
         if len(words) > 1 and words[1] == 'item':
             search_query = ' '.join(words[2:]) # rejoin the user query with space
             result = search.search_item(search_query)
-            if len(result['items']) > 0:
+            if result['total'] == -1:
+                embeds.append(builder.build_error_embed())
+            elif len(result['items']) > 0:
                 if result['total'] > len(result['items']):
                     embeds.append(builder.build_too_many_embed(result['total'], search_query))
                 for item in result['items']:
@@ -37,7 +39,9 @@ async def on_message(message):
         elif len(words) > 1 and words[1] == 'search':
             search_query = ' '.join(words[2:]) # rejoin the user query with space
             result = search.search_item(search_query, advanced=True)
-            if len(result['items']) > 0:
+            if result['total'] == -1:
+                embeds.append(builder.build_error_embed())
+            elif len(result['items']) > 0:
                 if result['total'] > len(result['items']):
                     embeds.append(builder.build_too_many_embed(result['total'], search_query))
                 for item in result['items']:
@@ -49,7 +53,9 @@ async def on_message(message):
         elif len(words) > 1 and words[1] == 'list':
             search_query = ' '.join(words[2:]) # rejoin the user query with space
             result = search.search_item(search_query, res_size=50, advanced=True, scroll_time='10s')
-            if len(result['items']) == 0:
+            if result['total'] == -1:
+                embeds.append(builder.build_error_embed())
+            elif len(result['items']) == 0:
                 embeds.append(builder.build_item_embed(None))
             else:
                 while len(result['items']) > 0:

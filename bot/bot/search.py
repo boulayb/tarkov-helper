@@ -25,6 +25,8 @@ def search_item(item, res_size=CONST_ES_RESULT_SIZE, scroll_time='0s', advanced=
                 items.append(hit['_source'])
     except:
         logger.info("Warning: Elasticsearch failed to search query: " + item)
+        search = {}
+        total = -1  # error code
 
     if '_scroll_id' in search:
         result = {'total': total, 'items': items, 'scroll_id': search['_scroll_id']}

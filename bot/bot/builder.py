@@ -33,6 +33,18 @@ def build_tips_embed():
     return embed
 
 
+# format an embed to display an error message
+def build_error_embed():
+
+    embed = discord.Embed(
+        title='Oops, something went wrong with that research.',
+        description='If that keeps happening, please contact the developper.',
+        colour=discord.Colour.blue()
+    )
+
+    return embed
+
+
 # format an embed to display the default embed with the list of command available
 def build_help_embed():
 
