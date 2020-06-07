@@ -22,7 +22,7 @@ def build_too_many_embed(total, name):
 
 
 # format an embed to display a random tip from the tips list
-def build_tips_embed(error):
+def build_tips_embed():
 
     embed = discord.Embed(
         title=random.choice(TIPS_LIST),
@@ -30,19 +30,19 @@ def build_tips_embed(error):
         colour=discord.Colour.blue()
     )
 
-    embed.add_field(name='reason:', value=str(error), inline=False)
-
     return embed
 
 
 # format an embed to display an error message
-def build_error_embed():
+def build_error_embed(error):
 
     embed = discord.Embed(
         title='Oops, something went wrong with that research.',
         description='If that keeps happening, please contact the developper.',
         colour=discord.Colour.blue()
     )
+
+    embed.add_field(name='reason:', value=str(error), inline=False)
 
     return embed
 
