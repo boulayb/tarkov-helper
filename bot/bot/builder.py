@@ -50,7 +50,9 @@ def build_help_embed():
     embed.add_field(name='!command list [YOUR ITEM]', value='Advanced search returning the full list of results names.\nClick [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) to learn more.', inline=False)
     embed.add_field(name='!command tips', value='Display a usefull tip to help you git gud.', inline=False)
 
-    embed.add_field(name='Data fetched from:', value='[EFT Wiki](https://escapefromtarkov.gamepedia.com) and [Loot Goblin](https://eft-loot.com/)', inline=False)
+    embed.add_field(name='TEST', value='+ color test!', inline=False)
+
+    embed.add_field(name='Data fetched from:', value='[EFT Wiki](https://escapefromtarkov.gamepedia.com) and [Tarkov-Market](https://tarkov-market.com/)', inline=False)
 
     embed.add_field(name='Donation:', value='If you like this project, feel free to donate by clicking [here](https://paypal.me/boulayb).\nIt helps me pay for the server!', inline=False)
     
@@ -116,7 +118,8 @@ def build_item_embed(item):
 
         embed.set_thumbnail(url=item['icon'])
         if 'price_date' in item:
-            embed.set_footer(text='Click title for more infos - Last price update: ' + tools.days_since(tools.convert_date(item['price_date'])))
+            # embed.set_footer(text='Click title for more infos - Last price update: ' + tools.days_since(tools.convert_date_loot_goblin(item['price_date'])))  # old date from loot goblin
+            embed.set_footer(text='Click title for more infos - Last price update: ' + tools.days_since(tools.convert_date_tarkov_market(item['price_date'])))
         else:
             embed.set_footer(text='Click title for more infos')
 
@@ -128,9 +131,25 @@ def build_item_embed(item):
         embed.add_field(name='Weight', value=item['weight'], inline=True)
         embed.add_field(name='Exp on loot', value=item['exp'] + '\n', inline=True) # "\u200b" to add a blank line
 
-        if 'price' in item and 'price_slot' in item:
-            embed.add_field(name='Avg. price', value=str(item['price']) + ' ₽', inline=True)
-            embed.add_field(name='Avg. price/slot', value=str(item['price_slot']) + ' ₽', inline=True)
+        # old price from loot goblin
+        # if 'price' in item and 'price_slot' in item:
+        #     embed.add_field(name='Avg. price', value=str(item['price']) + ' ₽', inline=True)
+        #     embed.add_field(name='Avg. price/slot', value=str(item['price_slot']) + ' ₽', inline=True)
+
+        if 'price_day' in item and 'price_change_day' in item:
+            if item['price_change_day'] >= 0:   # add a '+' if it is positive
+                embed.add_field(name='Avg. price last 24H', value=str(item['price_day']) + ' ₽' + " (+" + str(int(item['price_change_day'])) + "%)", inline=True)
+            else:
+                embed.add_field(name='Avg. price last 24H', value=str(item['price_day']) + ' ₽' + " (" + str(int(item['price_change_day'])) + "%)", inline=True)
+        if 'price_week' in item and 'price_change_week' in item:
+            if item['price_change_week'] >= 0:  # add a '+' if it is positive
+                embed.add_field(name='Avg. price last 7d', value=str(item['price_week']) + ' ₽' + " (+" + str(int(item['price_change_week'])) + "%)", inline=True)
+            else:
+                embed.add_field(name='Avg. price last 7d', value=str(item['price_week']) + ' ₽' + " (" + str(int(item['price_change_week'])) + "%)", inline=True)
+        if 'price_slot_day' in item:
+            embed.add_field(name='Avg. price/slot', value=str(item['price_slot_day']) + ' ₽', inline=True)
+        if 'trader_name' in item and 'trader_price' in item:
+            embed.add_field(name='Best merchant rebuy', value=str(item['trader_price']) + ' ₽ at ' + item['trader_name'], inline=True)
 
         if len(item['quests']) > 0:
             quests_str = tools.build_string(item['quests'], item['url'] + "#Quests")['embed_str']

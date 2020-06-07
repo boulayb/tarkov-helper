@@ -32,4 +32,5 @@ TIPS_LIST = [
     'As a group, always have a leading leader.',
     'Stay frosty.',
     'Keep an eye on the clock.',
-    'Think twice before selling that item']
+    'Think twice before selling that item.',
+    'Never speculate on the mayonnaise.']

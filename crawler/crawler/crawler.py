@@ -5,39 +5,10 @@ from argparse import ArgumentParser
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
-import json
-import requests
-import itertools
-
 from settings import *
 
 import loot
-
-
-# retrieve prices from loot goblin for each item
-def crawl_prices(data):
-
-    # get the prices json
-    logger.info("Getting JSON from " + CONST_LOOT_GOBLIN)
-    r = requests.get(CONST_LOOT_GOBLIN)
-    r.raise_for_status()
-    goblin_json = json.loads(r.text)
-    items_list = goblin_json['result']['data']['allDataJson']['nodes']
-
-    for item in items_list:
-        item_name = item['name']
-        item_price = item['price_avg']
-        item_price_slot = item['price_per_slot']
-        item_price_date = item['timestamp']
-
-        if item_name in data['loot']:
-            data['loot'][item_name]['price'] = item_price
-            data['loot'][item_name]['price_slot'] = item_price_slot
-            data['loot'][item_name]['price_date'] = item_price_date
-        else:
-            logger.info("Warning: Price not added, no object found for item " + item_name)
-    
-    return data
+import price
 
 
 # format the crawled data to Elasticsearch bulk format 
@@ -65,7 +36,10 @@ def main():
     data['loot'] = loot.crawl_loot()
 
     # item prices from loot goblin
-    data = crawl_prices(data)
+    # data = price.crawl_prices_loot_goblin(data)
+
+    # item prices from tarkov market
+    data = price.crawl_prices_tarkov_market(data)
 
     # format to es bulk format
     logger.info("Formating to bulk format")
