@@ -138,14 +138,14 @@ def build_item_embed(item):
 
         if 'price_day' in item and 'price_change_day' in item:
             if item['price_change_day'] >= 0:   # add a '+' if it is positive
-                embed.add_field(name='Avg. price last 24H', value=str(item['price_day']) + ' ₽' + " (+" + str(int(item['price_change_day'])) + "%)", inline=True)
+                embed.add_field(name='Avg. price 24H', value=str(item['price_day']) + ' ₽' + " (+" + str(int(item['price_change_day'])) + "%)", inline=True)
             else:
-                embed.add_field(name='Avg. price last 24H', value=str(item['price_day']) + ' ₽' + " (" + str(int(item['price_change_day'])) + "%)", inline=True)
+                embed.add_field(name='Avg. price 24H', value=str(item['price_day']) + ' ₽' + " (" + str(int(item['price_change_day'])) + "%)", inline=True)
         if 'price_week' in item and 'price_change_week' in item:
             if item['price_change_week'] >= 0:  # add a '+' if it is positive
-                embed.add_field(name='Avg. price last 7d', value=str(item['price_week']) + ' ₽' + " (+" + str(int(item['price_change_week'])) + "%)", inline=True)
+                embed.add_field(name='Avg. price 7d', value=str(item['price_week']) + ' ₽' + " (+" + str(int(item['price_change_week'])) + "%)", inline=True)
             else:
-                embed.add_field(name='Avg. price last 7d', value=str(item['price_week']) + ' ₽' + " (" + str(int(item['price_change_week'])) + "%)", inline=True)
+                embed.add_field(name='Avg. price 7d', value=str(item['price_week']) + ' ₽' + " (" + str(int(item['price_change_week'])) + "%)", inline=True)
         if 'price_slot_day' in item:
             embed.add_field(name='Avg. price/slot', value=str(item['price_slot_day']) + ' ₽', inline=True)
         if 'trader_name' in item and 'trader_price' in item:
