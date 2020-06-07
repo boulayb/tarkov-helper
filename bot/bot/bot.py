@@ -49,9 +49,12 @@ async def on_message(message):
         elif len(words) > 1 and words[1] == 'list':
             search_query = ' '.join(words[2:]) # rejoin the user query with space
             result = search.search_item(search_query, res_size=50, advanced=True, scroll_time='10s')
-            while len(result['items']) > 0:
-                embeds.append(builder.build_list_embeds(result['items'], search_query))
-                result = search.scroll_item(result['scroll_id'], scroll_time='10s')
+            if len(result['items']) == 0:
+                embeds.append(builder.build_item_embed(None))
+            else:
+                while len(result['items']) > 0:
+                    embeds.append(builder.build_list_embeds(result['items'], search_query))
+                    result = search.scroll_item(result['scroll_id'], scroll_time='10s')
 
         # TIP command
         elif len(words) > 1 and (words[1] == 'tips' or words[1] == 'tip'):

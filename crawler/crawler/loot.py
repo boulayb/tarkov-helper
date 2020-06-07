@@ -38,7 +38,7 @@ def crawl_loot_item(item_url):
     item_data['description'] = getter.get_item_description(item_soup, item_url)
     item_data['type'] = getter.get_item_type(item_details_table, item_url)
     item_data['size'] = getter.get_item_size(item_details_table, item_url)
-    item_data['weight'] = getter.get_item_weight(item_details_table, item_url)
+    item_data['weight'] = getter.get_item_weight(item_details_table, item_url)  ### TODO: weight as int to be able to use it in advanced search
     item_data['exp'] = getter.get_item_exp(item_details_table, item_url)
     item_data['locations'] = getter.get_item_locations(item_soup, item_url)
     item_data['notes'] = getter.get_item_notes(item_soup, item_url)
