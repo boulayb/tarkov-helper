@@ -23,9 +23,10 @@ def search_item(item, res_size=CONST_ES_RESULT_SIZE, scroll_time='0s', advanced=
         if total > 0:
             for hit in search['hits']['hits']:
                 items.append(hit['_source'])
-    except:
+    except Exception as e:
         logger.info("Warning: Elasticsearch failed to search query: " + item)
         search = {}
+        items = [e]
         total = -1  # error code
 
     if '_scroll_id' in search:

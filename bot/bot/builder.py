@@ -22,13 +22,15 @@ def build_too_many_embed(total, name):
 
 
 # format an embed to display a random tip from the tips list
-def build_tips_embed():
+def build_tips_embed(error):
 
     embed = discord.Embed(
         title=random.choice(TIPS_LIST),
         description='',
         colour=discord.Colour.blue()
     )
+
+    embed.add_field(name='reason:', value=str(error), inline=False)
 
     return embed
 
