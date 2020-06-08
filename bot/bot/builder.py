@@ -164,19 +164,19 @@ def build_item_embed(item):
         #     embed.add_field(name='Avg. price', value=str(item['price']) + ' ₽', inline=True)
         #     embed.add_field(name='Avg. price/slot', value=str(item['price_slot']) + ' ₽', inline=True)
 
-        if 'price_day' in item and 'price_change_day' in item:
+        if 'price_day' in item and 'price_change_day' in item and item['price_day'] != '' and item['price_change_day'] != '':
             if item['price_change_day'] >= 0:   # add a '+' if it is positive
                 embed.add_field(name='Avg. price 24H', value=str(item['price_day']) + ' ₽' + " (+" + str(int(item['price_change_day'])) + "%)", inline=True)
             else:
                 embed.add_field(name='Avg. price 24H', value=str(item['price_day']) + ' ₽' + " (" + str(int(item['price_change_day'])) + "%)", inline=True)
-        if 'price_week' in item and 'price_change_week' in item:
+        if 'price_week' in item and 'price_change_week' in item and item['price_week'] != '' and item['price_change_week'] != '':
             if item['price_change_week'] >= 0:  # add a '+' if it is positive
                 embed.add_field(name='Avg. price 7d', value=str(item['price_week']) + ' ₽' + " (+" + str(int(item['price_change_week'])) + "%)", inline=True)
             else:
                 embed.add_field(name='Avg. price 7d', value=str(item['price_week']) + ' ₽' + " (" + str(int(item['price_change_week'])) + "%)", inline=True)
-        if 'price_slot_day' in item:
+        if 'price_slot_day' in item and item['price_slot_day'] != '':
             embed.add_field(name='Avg. price/slot', value=str(item['price_slot_day']) + ' ₽', inline=True)
-        if 'trader_name' in item and 'trader_price' in item:
+        if 'trader_name' in item and 'trader_price' in item and item['trader_name'] != '' and item['trader_price'] != '':
             embed.add_field(name='Best merchant rebuy', value=str(item['trader_price']) + ' ₽ (' + str(int(item['trader_price'] / item['total_size'])) + ' ₽/slot) at ' + item['trader_name'], inline=True)
 
         if len(item['quests']) > 0:
@@ -191,7 +191,7 @@ def build_item_embed(item):
             locations_str = tools.build_string(item['locations'], item['url'] + "#Location")['embed_str']
             embed.add_field(name='Locations', value=locations_str, inline=False)
 
-        if 'trades' in item and item['trades']:
+        if 'trades' in item and item['trades'] != '':
             embed.set_image(url=item['trades'])
 
     return embed

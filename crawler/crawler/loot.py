@@ -15,7 +15,7 @@ import tools
 
 # crawl a single item page to retrieve infos
 def crawl_loot_item(item_url):
-    item_data = {}
+    item_data = {}  ### TODO: set default values for all data that will go in there (loot and prices)
 
     # get the item loot page
     logger.info("Getting HTML from " + CONST_BASE_URL + item_url)
