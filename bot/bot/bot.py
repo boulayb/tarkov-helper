@@ -33,7 +33,7 @@ async def on_message(message):
                 for item in result['items']:
                     embeds.append(builder.build_item_embed(item))
             else:
-                embeds.append(builder.build_item_embed(None))
+                embeds.append(builder.build_not_found_embed())
 
         # SEARCH command
         elif len(words) > 1 and words[1] == 'search':
@@ -47,7 +47,7 @@ async def on_message(message):
                 for item in result['items']:
                     embeds.append(builder.build_item_embed(item))
             else:
-                embeds.append(builder.build_item_embed(None))
+                embeds.append(builder.build_not_found_embed())
 
         # LIST command
         elif len(words) > 1 and words[1] == 'list':
@@ -56,7 +56,7 @@ async def on_message(message):
             if result['total'] == -1:
                 embeds.append(builder.build_error_embed(result['items'][0]))
             elif len(result['items']) == 0:
-                embeds.append(builder.build_item_embed(None))
+                embeds.append(builder.build_not_found_embed())
             else:
                 while len(result['items']) > 0:
                     embeds.append(builder.build_list_embeds(result['items'], search_query))

@@ -120,17 +120,21 @@ def build_list_embeds(items, query):
     return embed
 
 
+# format an embed to display no result
+def build_not_found_embed():
+    embed = discord.Embed(
+        title='Sorry chief, nothing found for that research.',
+        description='',
+        colour=discord.Colour.blue()
+    )
+
+    return embed
+
+
 # format an embed to display item infos
 def build_item_embed(item):
 
-    if item is None:
-        embed = discord.Embed(
-            title='Sorry chief, nothing found for that research.',
-            description='',
-            colour=discord.Colour.blue()
-        )
-
-    else:
+    try:
         # append type to title if it exist
         if item['type']:
             title = '**' + item['name'] + '** - ```' + item['type'] + '```'
@@ -193,5 +197,8 @@ def build_item_embed(item):
 
         if 'trades' in item and item['trades'] != '':
             embed.set_image(url=item['trades'])
+
+    except Exception as e:
+        embed = build_error_embed(e)
 
     return embed
