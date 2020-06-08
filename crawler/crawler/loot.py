@@ -26,8 +26,9 @@ def crawl_loot_item(item_url):
     item_soup = BeautifulSoup(item_html, 'html.parser')
 
     # open page via webdriver
-    driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
-    driver.get(CONST_BASE_URL + item_url)
+    if take_screenshots is True:
+        driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
+        driver.get(CONST_BASE_URL + item_url)
 
     # get the item details table
     item_details_table = item_soup.find(id='va-infobox0-content') # should be unique
@@ -44,11 +45,13 @@ def crawl_loot_item(item_url):
     item_data['notes'] = getter.get_item_notes(item_soup, item_url)
     item_data['quests'] = getter.get_item_quests(item_soup, item_url)
     item_data['hideouts'] = getter.get_item_hideouts(item_soup, item_url)
-    item_data['trades'] = getter.get_item_trades(item_url, driver)
+    if take_screenshots is True:
+        item_data['trades'] = getter.get_item_trades(item_url, driver)
 
     # clean beautifulsoup parser and close webdriver page
     item_soup.decompose()
-    driver.close()
+    if take_screenshots is True:
+        driver.close()
 
     return item_data
 

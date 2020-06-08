@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
-from argparse import ArgumentParser
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
@@ -28,29 +27,30 @@ def to_es_bulk_format(data):
 
 
 def main():
-    ### TODO: add arguments parsing
 
     # result dict
     logger.info("Crawling")
     data = {}
     data['loot'] = loot.crawl_loot()
 
-    # item prices from loot goblin
-    # data = price.crawl_prices_loot_goblin(data)
+    if crawl_prices is True:
+        # item prices from loot goblin
+        # data = price.crawl_prices_loot_goblin(data)
 
-    # item prices from tarkov market
-    data = price.crawl_prices_tarkov_market(data)
+        # item prices from tarkov market
+        data = price.crawl_prices_tarkov_market(data)
 
-    # format to es bulk format
-    logger.info("Formating to bulk format")
-    bulk_data = to_es_bulk_format(data)
+    if use_elasticsearch is True:
+        # format to es bulk format
+        logger.info("Formating to bulk format")
+        bulk_data = to_es_bulk_format(data)
 
-    # send to elasticsearch
-    logger.info("Sending to elasticsearch")
-    es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
-    if es.indices.exists(index=CONST_ES_INDEX) is False:
-        es.indices.create(index=CONST_ES_INDEX)
-    es.bulk(index=CONST_ES_INDEX, body=bulk_data)
+        # send to elasticsearch
+        logger.info("Sending to elasticsearch")
+        es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
+        if es.indices.exists(index=CONST_ES_INDEX) is False:
+            es.indices.create(index=CONST_ES_INDEX)
+        es.bulk(index=CONST_ES_INDEX, body=bulk_data)
 
     logger.info("Done!")
 

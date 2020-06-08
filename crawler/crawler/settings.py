@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from argparse import ArgumentParser
+
 import logging
 
 CONST_SELENIUM_DELAY = 1
@@ -19,6 +21,23 @@ def init():
 
     global log_hdlr
     global logger
+    global use_elasticsearch
+    global crawl_prices
+    global take_screenshots
+
+    # parse arguments
+    parser = ArgumentParser('tarkov-helper_crawler')
+    parser.add_argument('-es', '--elasticsearch', dest='use_elasticsearch', action='store_true', help='Push results into Elasticsearch.')
+    parser.add_argument('-p', '--prices', dest='crawl_prices', action='store_true', help='Crawl prices from Tarkov-Market / Loot Goblin.')
+    parser.add_argument('-s', '--screenshots', dest='take_screenshots', action='store_true', help='Use Selenium webdriver to take screenshots.')
+    parser.set_defaults(use_elasticsearch=False)
+    parser.set_defaults(crawl_prices=False)
+    parser.set_defaults(take_screenshots=False)
+    args = parser.parse_args()
+
+    use_elasticsearch = args.use_elasticsearch
+    crawl_prices = args.crawl_prices
+    take_screenshots = args.take_screenshots
 
     # logs init
     logging.basicConfig(level=logging.INFO)
