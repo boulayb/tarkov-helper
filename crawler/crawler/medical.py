@@ -79,8 +79,6 @@ def crawl_item(item_url):
     if take_screenshots is True:
         driver.close()
 
-    print(item_data)
-
     return item_data
 
 

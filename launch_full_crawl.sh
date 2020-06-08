@@ -1,1 +1,1 @@
-sudo docker container exec `sudo docker ps -a -q  --filter ancestor=tarkov-helper_crawler` python crawler/crawler.py -es -s -p &
+sudo docker container exec `sudo docker ps -a -q  --filter ancestor=tarkov-helper_crawler` python crawler/crawler.py $1 $2 $3
