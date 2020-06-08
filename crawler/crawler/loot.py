@@ -84,7 +84,7 @@ def crawl_item(item_url):
 
 # crawl links to item from table
 def crawl_table(loot_table):
-    loot_date = {}
+    loot_data = {}
 
     for loot_item in loot_table[1:]: # each row of the table is a loot item, except first one (titles)
         loot_infos = loot_item.find_all("th")   # 0=icon, 1=name+link, 2=type, etc...
