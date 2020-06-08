@@ -56,11 +56,7 @@ def get_item_weight(item_details_table, item_url):
 
 # get the item size
 def get_item_size(item_details_table, item_url):
-    res = generic_get_infos(item_details_table, item_url, "Grid size")
-    if 'x' in res:
-        res_split = res.split('x')
-        new_res = res + ' (' + str(int(res_split[0]) * int(res_split[1])) + ')'
-    return new_res
+    return generic_get_infos(item_details_table, item_url, "Grid size")
 
 
 # get the item exp

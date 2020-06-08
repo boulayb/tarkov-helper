@@ -163,7 +163,7 @@ def build_item_embed(item):
         if 'price_slot_day' in item:
             embed.add_field(name='Avg. price/slot', value=str(item['price_slot_day']) + ' ₽', inline=True)
         if 'trader_name' in item and 'trader_price' in item:
-            embed.add_field(name='Best merchant rebuy', value=str(item['trader_price']) + ' ₽ (' + str(item['trader_price'] / item['total_size']) + ' ₽/slot) at ' + item['trader_name'], inline=True)
+            embed.add_field(name='Best merchant rebuy', value=str(item['trader_price']) + ' ₽ (' + str(int(item['trader_price'] / item['total_size'])) + ' ₽/slot) at ' + item['trader_name'], inline=True)
 
         if len(item['quests']) > 0:
             quests_str = tools.build_string(item['quests'], item['url'] + "#Quests")['embed_str']
@@ -177,7 +177,7 @@ def build_item_embed(item):
             locations_str = tools.build_string(item['locations'], item['url'] + "#Location")['embed_str']
             embed.add_field(name='Locations', value=locations_str, inline=False)
 
-        if item['trades']:
+        if 'trades' in item and item['trades']:
             embed.set_image(url=item['trades'])
 
     return embed
