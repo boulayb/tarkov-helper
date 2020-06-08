@@ -21,7 +21,7 @@ def init():
     es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
 
     # logs init
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, filemode='w')
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter(fmt='%(asctime)s :: %(levelname)s :: %(message)s')
