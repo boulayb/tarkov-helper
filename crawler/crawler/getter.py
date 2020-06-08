@@ -145,7 +145,7 @@ def generic_get_infos(item_details_table, item_url, info_id):
 
 
 # take screenshot of the trade & craft sections, concat them and upload to imgur, save link for ES
-def get_item_trades(item_url, driver):
+def get_item_trade(item_url, driver):
     try:
         popup = WebDriverWait(driver, CONST_SELENIUM_DELAY).until(EC.presence_of_element_located((By.XPATH, "//*[text()='ACCEPT']")))   # wait x seconds for page to load
         popup.click()   # click the page cookie popup so it doesn't hide the screenshots

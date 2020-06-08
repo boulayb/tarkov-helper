@@ -36,9 +36,6 @@ def main():
     # data['medical'] = medical.crawl_loot()
 
     if crawl_prices is True:
-        # item prices from loot goblin
-        # data = price.crawl_prices_loot_goblin(data)
-
         # item prices from tarkov market
         data = price.crawl_prices_tarkov_market(data)
 

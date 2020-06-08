@@ -109,10 +109,10 @@ def build_list_embeds(items, query):
         )
 
         # embed char limit is 1024 so we must build many until no text is left
-        build_res = tools.build_string(list_of_names, "", False)
+        build_res = tools.build_string(list_of_names, "", see_more=False)
         while build_res["rest_str"] is not None:
             embed.add_field(name='Result list:', value=build_res["embed_str"], inline=False)
-            build_res = tools.build_string(build_res["rest_str"].split('\n- ')[1:], "", False)  # .split('\n- ')[1:] to remove the first empty '-' because of how shitty tools.build_string() is made
+            build_res = tools.build_string(build_res["rest_str"].split('\n'), "", see_more=False)  # .split('\n- ')[1:] to remove the first empty '-' because of how shitty tools.build_string() is made
         embed.add_field(name='Result list:', value=build_res["embed_str"], inline=False)
 
         embed.set_footer(text='Click name for more infos')
@@ -131,7 +131,7 @@ def build_not_found_embed():
     return embed
 
 
-# format an embed to display item infos
+# format an embed to display item infos, "\u200b" to add a blank line
 def build_item_embed(item):
 
     try:
@@ -148,57 +148,57 @@ def build_item_embed(item):
             colour=discord.Colour.blue()
         )
 
-        embed.set_thumbnail(url=item['icon'])
-        if 'price_date' in item:
-            # embed.set_footer(text='Click title for more infos - Last price update: ' + tools.days_since(tools.convert_date_loot_goblin(item['price_date'])))  # old date from loot goblin
+        if item['icon']:
+            embed.set_thumbnail(url=item['icon'])
+
+        if item['price_date']:
             embed.set_footer(text='Click title for more infos - Last price update: ' + tools.days_since(tools.convert_date_tarkov_market(item['price_date'])))
         else:
             embed.set_footer(text='Click title for more infos')
 
         if len(item['notes']) > 0:
-            notes_str = tools.build_string(item['notes'], item['url'] + "#Notes")['embed_str']
+            notes_str = tools.build_string(item['notes'], item['url'] + "#Notes", prefix='- ')['embed_str']
             embed.add_field(name='Notes', value=notes_str, inline=False)
 
-        embed.add_field(name='Size', value=item['size'] + ' (' + str(item['total_size']) + ')', inline=True)
-        embed.add_field(name='Weight', value=str(item['weight']) + ' kg', inline=True)
-        embed.add_field(name='Exp on loot', value=item['exp'] + '\n', inline=True) # "\u200b" to add a blank line
+        if item['size']:
+            embed.add_field(name='Size', value=item['size'] + ' (' + str(item['total_size']) + ')', inline=True)
+        if item['weight']:
+            embed.add_field(name='Weight', value=str(item['weight']) + ' kg', inline=True)
+        if item['exp']:
+            embed.add_field(name='Exp on loot', value=item['exp'] + '\n', inline=True)
 
-        # old price from loot goblin
-        # if 'price' in item and 'price_slot' in item:
-        #     embed.add_field(name='Avg. price', value=str(item['price']) + ' ₽', inline=True)
-        #     embed.add_field(name='Avg. price/slot', value=str(item['price_slot']) + ' ₽', inline=True)
-
-        if 'price_day' in item and 'price_change_day' in item and item['price_day'] != '' and item['price_change_day'] != '':
+        if item['price_day'] and item['price_change_day']:
             if item['price_change_day'] >= 0:   # add a '+' if it is positive
                 embed.add_field(name='Avg. price 24H', value=str(item['price_day']) + ' ₽' + " (+" + str(int(item['price_change_day'])) + "%)", inline=True)
             else:
                 embed.add_field(name='Avg. price 24H', value=str(item['price_day']) + ' ₽' + " (" + str(int(item['price_change_day'])) + "%)", inline=True)
-        if 'price_week' in item and 'price_change_week' in item and item['price_week'] != '' and item['price_change_week'] != '':
+        if item['price_week'] and item['price_change_week']:
             if item['price_change_week'] >= 0:  # add a '+' if it is positive
                 embed.add_field(name='Avg. price 7d', value=str(item['price_week']) + ' ₽' + " (+" + str(int(item['price_change_week'])) + "%)", inline=True)
             else:
                 embed.add_field(name='Avg. price 7d', value=str(item['price_week']) + ' ₽' + " (" + str(int(item['price_change_week'])) + "%)", inline=True)
-        if 'price_slot_day' in item and item['price_slot_day'] != '':
+        if item['price_slot_day']:
             embed.add_field(name='Avg. price/slot', value=str(item['price_slot_day']) + ' ₽', inline=True)
-        if 'trader_name' in item and 'trader_price' in item and item['trader_name'] != '' and item['trader_price'] != '':
+        if item['trader_name'] and item['trader_price']:
             embed.add_field(name='Best merchant rebuy', value=str(item['trader_price']) + ' ₽ (' + str(int(item['trader_price'] / item['total_size'])) + ' ₽/slot) at ' + item['trader_name'], inline=True)
 
         if len(item['quests']) > 0:
-            quests_str = tools.build_string(item['quests'], item['url'] + "#Quests")['embed_str']
+            quests_str = tools.build_string(item['quests'], item['url'] + "#Quests", prefix='- ')['embed_str']
             embed.add_field(name='Quests', value=quests_str, inline=False)
 
         if len(item['hideouts']) > 0:
-            hideouts_str = tools.build_string(item['hideouts'], item['url'] + "#Hideout")['embed_str']
+            hideouts_str = tools.build_string(item['hideouts'], item['url'] + "#Hideout", prefix='- ')['embed_str']
             embed.add_field(name='Hideouts', value=hideouts_str, inline=False)
 
         if len(item['locations']) > 0:
-            locations_str = tools.build_string(item['locations'], item['url'] + "#Location")['embed_str']
+            locations_str = tools.build_string(item['locations'], item['url'] + "#Location", prefix='- ')['embed_str']
             embed.add_field(name='Locations', value=locations_str, inline=False)
 
-        if 'trades' in item and item['trades'] != '':
-            embed.set_image(url=item['trades'])
+        if item['trade']:
+            embed.set_image(url=item['trade'])
 
     except Exception as e:
+        logger.info("Warning: Embed build failed for item: " + item['name'] + " - Reason: " + e)
         embed = build_error_embed(e)
 
     return embed

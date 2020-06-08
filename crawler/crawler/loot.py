@@ -15,7 +15,32 @@ import tools
 
 # crawl a single item page to retrieve infos
 def crawl_loot_item(item_url):
-    item_data = {}  ### TODO: set default values for all data that will go in there (loot and prices)
+    item_data = {
+        'url': '',
+        'name': '',
+        'icon': '',
+        'description': '',
+        'type': '',
+        'size': '',
+        'total_size': '',
+        'weight': '',
+        'exp': '',
+        'locations': [],
+        'notes': [],
+        'quests': [],
+        'hideouts': [],
+        'trade': '',
+        'price_day': '',
+        'price_week': '',
+        'price_slot_day': '',
+        'price_slot_week': '',
+        'price_change_day': '',
+        'price_change_week': '',
+        'trader_name': '',
+        'trader_price': '',
+        'price_date': '',
+        'worth_resell': False,
+    }
 
     # get the item loot page
     logger.info("Getting HTML from " + CONST_BASE_URL + item_url)
@@ -48,7 +73,7 @@ def crawl_loot_item(item_url):
     item_data['quests'] = getter.get_item_quests(item_soup, item_url)
     item_data['hideouts'] = getter.get_item_hideouts(item_soup, item_url)
     if take_screenshots is True:
-        item_data['trades'] = getter.get_item_trades(item_url, driver)
+        item_data['trade'] = getter.get_item_trade(item_url, driver)
 
     # clean beautifulsoup parser and close webdriver page
     item_soup.decompose()

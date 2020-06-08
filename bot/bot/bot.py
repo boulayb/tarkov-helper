@@ -8,6 +8,7 @@ import search
 
 
 # format should be "!command KEYWORD ITEM"
+### TODO: Add command to give the 10 best worth_resell items
 @client.event
 async def on_message(message):
 
