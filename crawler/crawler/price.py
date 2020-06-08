@@ -42,17 +42,17 @@ def crawl_prices_tarkov_market(data):
         item_price_date = item['priceUpdated'] if 'priceUpdated' in item else ''
         item_is_worth_resell = True if (item_price_day != '' and item_trader_price != '') and (int(item_price_day) <= int(item_trader_price)) else False
 
-        if item_name in data['loot']:
-            data['loot'][item_name]['price_day'] = item_price_day
-            data['loot'][item_name]['price_week'] = item_price_week
-            data['loot'][item_name]['price_slot_day'] = item_price_slot_day
-            data['loot'][item_name]['price_slot_week'] = item_price_slot_week
-            data['loot'][item_name]['price_change_day'] = item_price_change_day
-            data['loot'][item_name]['price_change_week'] = item_price_change_week
-            data['loot'][item_name]['trader_name'] = item_trader_name
-            data['loot'][item_name]['trader_price'] = item_trader_price
-            data['loot'][item_name]['price_date'] = item_price_date
-            data['loot'][item_name]['worth_resell'] = item_is_worth_resell
+        if item_name in data:
+            data[item_name]['price_day'] = item_price_day
+            data[item_name]['price_week'] = item_price_week
+            data[item_name]['price_slot_day'] = item_price_slot_day
+            data[item_name]['price_slot_week'] = item_price_slot_week
+            data[item_name]['price_change_day'] = item_price_change_day
+            data[item_name]['price_change_week'] = item_price_change_week
+            data[item_name]['trader_name'] = item_trader_name
+            data[item_name]['trader_price'] = item_trader_price
+            data[item_name]['price_date'] = item_price_date
+            data[item_name]['worth_resell'] = item_is_worth_resell
         else:
             logger.info("Warning: Price not added, no object found for item " + item_name)
     
@@ -75,10 +75,10 @@ def crawl_prices_loot_goblin(data):
         item_price_slot = item['price_per_slot']
         item_price_date = item['timestamp']
 
-        if item_name in data['loot']:
-            data['loot'][item_name]['price'] = item_price
-            data['loot'][item_name]['price_slot'] = item_price_slot
-            data['loot'][item_name]['price_date'] = item_price_date
+        if item_name in data:
+            data[item_name]['price'] = item_price
+            data[item_name]['price_slot'] = item_price_slot
+            data[item_name]['price_date'] = item_price_date
         else:
             logger.info("Warning: Price not added, no object found for item " + item_name)
     

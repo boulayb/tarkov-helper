@@ -5,7 +5,6 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 import requests
-import itertools
 
 from settings import *
 
@@ -14,7 +13,7 @@ import tools
 
 
 # crawl a single item page to retrieve infos
-def crawl_loot_item(item_url):
+def crawl_item(item_url):
     item_data = {
         'url': '',
         'name': '',
@@ -83,30 +82,40 @@ def crawl_loot_item(item_url):
     return item_data
 
 
-# crawl each loot page from the main loot page table to get their infos
-def crawl_loot():
+# crawl links to item from table
+def crawl_table(loot_table):
+    loot_date = {}
+
+    for loot_item in loot_table[1:]: # each row of the table is a loot item, except first one (titles)
+        loot_infos = loot_item.find_all("th")   # 0=icon, 1=name+link, 2=type, etc...
+        loot_name = loot_infos[1].find("a")
+        if loot_name is not None:
+            link = loot_name['href']
+            name = loot_name.getText()
+            loot_data[name] = crawl_item(link)
+
+    return loot_data
+
+
+# crawl all links to item from the main loot page to get their infos
+def crawl_category():
     loot_data = {}
 
-    # get the wiki loot page
+    # get the wiki page
     logger.info("Getting HTML from " + CONST_BASE_URL + CONST_LOOT_PAGE)
     r = requests.get(CONST_BASE_URL + CONST_LOOT_PAGE)
     r.raise_for_status()
 
     # init beautifulsoup parser
-    loot_html = r.text
-    loot_soup = BeautifulSoup(loot_html, 'html.parser')
+    page_html = r.text
+    page_soup = BeautifulSoup(page_html, 'html.parser')
 
     # get the loot table
-    loot_table = loot_soup.find('table', {'class': 'wikitable'}).find_all("tr")
-    for loot_item in itertools.islice(loot_table, 1, None): # each row of the table is a loot item, except first one (titles)
-        loot_infos = loot_item.find_all("th")   # 0=icon, 1=name+link, 2=type, 3=notes
-        loot_name = loot_infos[1].find("a")
-        if loot_name is not None:
-            link = loot_name['href']
-            name = loot_name.getText()
-            loot_data[name] = crawl_loot_item(link)
-    
+    loot_table = page_soup.find(id='List_of_loot').parent.find_next('table', {'class': 'wikitable'}).find_all("tr")
+
+    loot_data.update(crawl_table(loot_table))
+
     # clean beautifulsoup parser
-    loot_soup.decompose()
+    page_soup.decompose()
 
     return loot_data

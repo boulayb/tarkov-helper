@@ -5,7 +5,6 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 import requests
-import itertools
 
 from settings import *
 
@@ -14,8 +13,33 @@ import tools
 
 
 # crawl a single item page to retrieve infos
-def crawl_loot_item(item_url):
-    item_data = {}
+def crawl_item(item_url):
+    item_data = {
+        'url': '',
+        'name': '',
+        'icon': '',
+        'description': '',
+        'type': '',
+        'size': '',
+        'total_size': '',
+        'weight': '',
+        'exp': '',
+        'locations': [],
+        'notes': [],
+        'quests': [],
+        'hideouts': [],
+        'trade': '',
+        'price_day': '',
+        'price_week': '',
+        'price_slot_day': '',
+        'price_slot_week': '',
+        'price_change_day': '',
+        'price_change_week': '',
+        'trader_name': '',
+        'trader_price': '',
+        'price_date': '',
+        'worth_resell': False,
+    }
 
     # get the item loot page
     logger.info("Getting HTML from " + CONST_BASE_URL + item_url)
@@ -48,40 +72,54 @@ def crawl_loot_item(item_url):
     item_data['quests'] = getter.get_item_quests(item_soup, item_url)
     item_data['hideouts'] = getter.get_item_hideouts(item_soup, item_url)
     if take_screenshots is True:
-        item_data['trades'] = getter.get_item_trades(item_url, driver)
+        item_data['trade'] = getter.get_item_trade(item_url, driver)
 
     # clean beautifulsoup parser and close webdriver page
     item_soup.decompose()
     if take_screenshots is True:
         driver.close()
 
+    print(item_data)
+
     return item_data
 
 
-# crawl each loot page from the main loot page table to get their infos
-def crawl_loot():
+# crawl links to item from table
+def crawl_table(loot_table):
     loot_data = {}
 
-    # get the wiki loot page
+    for loot_item in loot_table[1:]: # each row of the table is a loot item, except first one (titles)
+        loot_infos = loot_item.find_all("th")   # 0=icon, 1=name+link, 2=type, etc...
+        loot_name = loot_infos[1].find("a")
+        if loot_name is not None:
+            link = loot_name['href']
+            name = loot_name.getText()
+            loot_data[name] = crawl_item(link)
+
+    return loot_data
+
+
+# crawl all links to item from the main loot page to get their infos
+def crawl_category():
+    loot_data = {}
+
+    # get the wiki page
     logger.info("Getting HTML from " + CONST_BASE_URL + CONST_MEDICAL_PAGE)
     r = requests.get(CONST_BASE_URL + CONST_MEDICAL_PAGE)
     r.raise_for_status()
 
     # init beautifulsoup parser
-    loot_html = r.text
-    loot_soup = BeautifulSoup(loot_html, 'html.parser')
+    page_html = r.text
+    page_soup = BeautifulSoup(page_html, 'html.parser')
 
     # get the loot table
-    loot_table = loot_soup.find('table', {'class': 'wikitable'}).find_all("tr")
-    for loot_item in itertools.islice(loot_table, 1, None): # each row of the table is a loot item, except first one (titles)
-        loot_infos = loot_item.find_all("th")   # 0=icon, 1=name+link, 2=type, 3=notes
-        loot_name = loot_infos[1].find("a")
-        if loot_name is not None:
-            link = loot_name['href']
-            name = loot_name.getText()
-            loot_data[name] = crawl_loot_item(link)
-    
+    medical_table = page_soup.find(id='List_of_medical_supplies').parent.find_next('table', {'class': 'wikitable'}).find_all("tr")
+    stimulator_table = page_soup.find(id='List_of_Stimulators').parent.find_next('table', {'class': 'wikitable'}).find_all("tr")
+
+    loot_data.update(crawl_table(medical_table))
+    loot_data.update(crawl_table(stimulator_table))
+
     # clean beautifulsoup parser
-    loot_soup.decompose()
+    page_soup.decompose()
 
     return loot_data

@@ -6,6 +6,7 @@ import logging
 
 CONST_SELENIUM_DELAY = 1
 CONST_ES_INDEX = "tarkov-helper"
+CONST_ES_TYPE = "tarkov"
 CONST_SCREENSHOTS_FOLDER = "crawler/screenshots"
 
 CONST_SERVER_URL = "http://vps-31da28b6.vps.ovh.net/"

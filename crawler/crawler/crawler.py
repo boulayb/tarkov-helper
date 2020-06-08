@@ -7,7 +7,7 @@ from elasticsearch.helpers import bulk
 from settings import *
 
 import loot
-# import medical
+import medical
 import price
 
 
@@ -17,12 +17,11 @@ import price
 def to_es_bulk_format(data):
     bulk = []
 
-    for category_type, category in data.items():
-        for obj_type, obj in category.items():
-            index = {'index': {'_index': CONST_ES_INDEX, '_type': category_type, '_id': obj_type}}
-            document = obj
-            bulk.append(index)
-            bulk.append(document)
+    for obj_name, obj in data.items():
+        index = {'index': {'_index': CONST_ES_INDEX, '_type': CONST_ES_TYPE, '_id': obj_name}}
+        document = obj
+        bulk.append(index)
+        bulk.append(document)
     
     return bulk
 
@@ -32,8 +31,8 @@ def main():
     # result dict
     logger.info("Crawling")
     data = {}
-    data['loot'] = loot.crawl_loot()
-    # data['medical'] = medical.crawl_loot()
+    data.update(loot.crawl_category())
+    data.update(medical.crawl_category())
 
     if crawl_prices is True:
         # item prices from tarkov market
