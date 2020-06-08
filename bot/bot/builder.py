@@ -195,7 +195,7 @@ def build_item_embed(item):
             embed.add_field(name='Locations', value=locations_str, inline=False)
 
         if item['trade']:
-            embed.set_image(url=item['trade'].replace('%22', '"'))
+            embed.set_image(url=item['trade'].replace('%22', '%2522'))
 
     except Exception as e:
         logger.info("Warning: Embed build failed for item: " + item['name'] + " - Reason: " + e)
