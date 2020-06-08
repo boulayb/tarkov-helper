@@ -15,6 +15,7 @@ CONST_TARKOV_MARKET = "https://tarkov-market.com/"
 CONST_TARKOV_MARKET_ITEMS = "https://tarkov-market.com/api/items?lang=en&search=&tag=&sort=&sort_direction=&skip=&limit=-1"
 
 CONST_LOOT_PAGE = "/Loot"
+CONST_MEDICAL_PAGE = "/Medical"
 
 
 def init():

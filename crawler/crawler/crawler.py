@@ -7,6 +7,7 @@ from elasticsearch.helpers import bulk
 from settings import *
 
 import loot
+# import medical
 import price
 
 
@@ -32,6 +33,7 @@ def main():
     logger.info("Crawling")
     data = {}
     data['loot'] = loot.crawl_loot()
+    # data['medical'] = medical.crawl_loot()
 
     if crawl_prices is True:
         # item prices from loot goblin
