@@ -62,6 +62,14 @@ async def on_message(message):
                     embeds.append(builder.build_list_embeds(result['items'], search_query))
                     result = search.scroll_item(result['scroll_id'], scroll_time='10s')
 
+        # MEDICAL command
+        elif len(words) > 1 and words[1] == 'medical':
+            embeds.append(builder.build_image_embed("Medical helper", CONST_MEDICAL_IMAGE))     ### TODO: Replace CONST by ES search for the file
+
+        # INJECTOR command
+        elif len(words) > 1 and (words[1] == 'injector' or words[1] == 'injectors'):
+            embeds.append(builder.build_image_embed("Injector helper", CONST_INJECTOR_IMAGE))   ### TODO: Replace CONST by ES search for the file
+
         # TIP command
         elif len(words) > 1 and (words[1] == 'tips' or words[1] == 'tip'):
             embeds.append(builder.build_tips_embed())

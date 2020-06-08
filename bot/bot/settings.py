@@ -8,6 +8,9 @@ import logging
 CONST_ES_RESULT_SIZE = 3
 CONST_ES_INDEX = "tarkov-helper"
 
+CONST_MEDICAL_IMAGE = "https://gamepedia.cursecdn.com/escapefromtarkov_gamepedia/0/0b/Visual_guide_to_Healing_items_by_-u-MadWookieX.png"
+CONST_INJECTOR_IMAGE = "https://gamepedia.cursecdn.com/escapefromtarkov_gamepedia/6/68/Injectors_Visual_Guide_by_-u-MadWookieX.png"
+
 
 def init():
 

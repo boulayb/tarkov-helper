@@ -33,6 +33,20 @@ def build_tips_embed():
     return embed
 
 
+# format an embed to display an image from an url
+def build_image_embed(title, image_url):
+
+    embed = discord.Embed(
+        title=title,
+        description='',
+        colour=discord.Colour.blue()
+    )
+
+    embed.set_image(url=image_url)
+
+    return embed
+
+
 # format an embed to display an error message
 def build_error_embed(error):
 
