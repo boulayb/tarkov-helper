@@ -141,8 +141,8 @@ def build_item_embed(item):
             notes_str = tools.build_string(item['notes'], item['url'] + "#Notes")['embed_str']
             embed.add_field(name='Notes', value=notes_str, inline=False)
 
-        embed.add_field(name='Size', value=item['size'], inline=True)   ### TODO: calculate total size
-        embed.add_field(name='Weight', value=item['weight'], inline=True)   ### TODO: weight as int to be able to use it in advanced search
+        embed.add_field(name='Size', value=item['size'] + ' (' + str(item['total_size']) + ')', inline=True)
+        embed.add_field(name='Weight', value=str(item['weight']) + ' kg', inline=True)
         embed.add_field(name='Exp on loot', value=item['exp'] + '\n', inline=True) # "\u200b" to add a blank line
 
         # old price from loot goblin
@@ -163,7 +163,7 @@ def build_item_embed(item):
         if 'price_slot_day' in item:
             embed.add_field(name='Avg. price/slot', value=str(item['price_slot_day']) + ' ₽', inline=True)
         if 'trader_name' in item and 'trader_price' in item:
-            embed.add_field(name='Best merchant rebuy', value=str(item['trader_price']) + ' ₽ at ' + item['trader_name'], inline=True)  ### TODO: Add price per slot too
+            embed.add_field(name='Best merchant rebuy', value=str(item['trader_price']) + ' ₽ (' + str(item['trader_price'] / item['total_size']) + ' ₽/slot) at ' + item['trader_name'], inline=True)
 
         if len(item['quests']) > 0:
             quests_str = tools.build_string(item['quests'], item['url'] + "#Quests")['embed_str']

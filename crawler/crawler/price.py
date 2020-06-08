@@ -6,14 +6,7 @@ import itertools
 
 from settings import *
 
-
-# find the substring between substr1(included) and substr2(excluded)
-def find_substring(string, substr1, substr2):
-    idx1 = string.find(substr1)
-    cutstr = string[idx1:]
-    idx2 = cutstr.find(substr2)
-    res = cutstr[:idx2]
-    return res
+import tools
 
 
 # retrieve prices from tarkov-market for each item
@@ -24,9 +17,9 @@ def crawl_prices_tarkov_market(data):
     r = requests.get(CONST_TARKOV_MARKET)   
     r.raise_for_status()
     cookies = r.headers['Set-Cookie']
-    cfduid = find_substring(cookies, "__cfduid=", ";")
-    uid = find_substring(cookies, " uid=", ";")
-    token = find_substring(cookies, "token=", ";")
+    cfduid = tools.find_substring(cookies, "__cfduid=", ";")
+    uid = tools.find_substring(cookies, " uid=", ";")
+    token = tools.find_substring(cookies, "token=", ";")
     cookie_string = cfduid + '; ' + uid + '; ' + token
     fake_header = {"Cookie": cookie_string}
 

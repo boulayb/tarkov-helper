@@ -48,12 +48,19 @@ def get_item_type(item_details_table, item_url):
 
 # get the item weight
 def get_item_weight(item_details_table, item_url):
-    return generic_get_infos(item_details_table, item_url, "Weight")
+    res = generic_get_infos(item_details_table, item_url, "Weight")
+    if 'kg' in res:
+        res_float = float(res.split('kg')[0])
+    return res_float
 
 
 # get the item size
 def get_item_size(item_details_table, item_url):
-    return generic_get_infos(item_details_table, item_url, "Grid size")
+    res = generic_get_infos(item_details_table, item_url, "Grid size")
+    if 'x' in res:
+        res_split = res.split('x')
+        new_res = res + ' (' + str(int(res_split[0]) * int(res_split[1])) + ')'
+    return new_res
 
 
 # get the item exp
