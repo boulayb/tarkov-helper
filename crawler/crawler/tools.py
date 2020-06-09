@@ -11,7 +11,7 @@ def find_substring(string, substr1, substr2):
 
 # calculate the total size of an item
 def calculate_total_size(size):
-    if 'x' in size:
+    if size and 'x' in size:
         size_split = size.split('x')
         total_size = int(size_split[0]) * int(size_split[1])
     else:

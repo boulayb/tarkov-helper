@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import re
 import json
 import requests
 import itertools
@@ -30,7 +31,7 @@ def crawl_prices_tarkov_market(data):
     items_list = market_json['items']
 
     for item in items_list:
-        item_name = item['enName'] if 'enName' in item else None    ### TODO: remove the (xx/xx) from the names (with regex?)
+        item_name = re.sub(' \([0-9]+\/[0-9]+\)', '', item['enName']) if 'enName' in item else None     #remove the (xx/xx) from the names
         item_price_day = item['avgDayPrice'] if 'avgDayPrice' in item else None
         item_price_week = item['avgWeekPrice'] if 'avgWeekPrice' in item else None
         item_price_slot_day = item['avgDayPricePerSlot'] if 'avgDayPricePerSlot' in item else None

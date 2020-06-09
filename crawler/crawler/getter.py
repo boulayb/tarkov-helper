@@ -21,7 +21,7 @@ def get_item_icon(item_soup, item_url):
             raise Exception
     except:
         logger.info("Warning: Icon not found for item " + item_url)
-        icon = ""
+        icon = None
 
     return icon
 
@@ -36,7 +36,7 @@ def get_item_name(item_soup, item_url):
             raise Exception
     except:
         logger.info("Warning: Name not found for item " + item_url)
-        name = "No name found"
+        name = None
 
     return name
 
@@ -49,7 +49,7 @@ def get_item_type(item_details_table, item_url):
 # get the item weight
 def get_item_weight(item_details_table, item_url):
     res = generic_get_infos(item_details_table, item_url, "Weight")
-    if 'kg' in res:
+    if res and 'kg' in res:
         res_float = float(res.split('kg')[0])
     return res_float
 
@@ -125,8 +125,9 @@ def generic_get_category(item_soup, item_url, category_id):
             infos.append('Check [wiki page](' + CONST_BASE_URL + item_url + '#' + category_id + ') for image')
     except:
         logger.info("Warning: " + category_id + " not found for item " + item_url)
+        infos = None
 
-    return infos
+    return infos if len(infos) > 0 else None
 
 
 # generic getter to get all text from the info table of an item
@@ -139,7 +140,7 @@ def generic_get_infos(item_details_table, item_url, info_id):
             raise Exception
     except:
         logger.info("Warning: " + info_id + " not found for item " + item_url)
-        info = "Not found"
+        info = None
 
     return info
 
@@ -151,7 +152,7 @@ def get_item_trade(item_url, driver):
         popup.click()   # click the page cookie popup so it doesn't hide the screenshots
     except:
         logger.info("Warning: Selenium couldn't parse the page for item " + item_url)
-        trades = ''
+        trades = None
         return trades
 
     # screenshot the crafting section
@@ -183,7 +184,7 @@ def get_item_trade(item_url, driver):
     elif trading_screen is not None:
         trading_screen.save(screenshot_location)
     else:
-        trades = ''
+        trades = None
         return trades
 
     trades = CONST_SERVER_URL + str(item_url) + '.png'

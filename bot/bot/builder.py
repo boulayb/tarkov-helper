@@ -143,8 +143,8 @@ def build_item_embed(item):
 
         embed = discord.Embed(
             title=title,
-            description=' '.join(item['description']),
-            url=item['url'],
+            description=' '.join(item['description']) if item['description'] else '',
+            url=item['url'] if item['url'] else '',
             colour=discord.Colour.blue()
         )
 
