@@ -26,20 +26,24 @@ def init():
     global use_elasticsearch
     global crawl_prices
     global take_screenshots
+    global reset_index
 
     # parse arguments
     parser = ArgumentParser('tarkov-helper_crawler')
     parser.add_argument('-es', '--elasticsearch', dest='use_elasticsearch', action='store_true', help='Push results into Elasticsearch.')
     parser.add_argument('-p', '--prices', dest='crawl_prices', action='store_true', help='Crawl prices from Tarkov-Market / Loot Goblin.')
     parser.add_argument('-s', '--screenshots', dest='take_screenshots', action='store_true', help='Use Selenium webdriver to take screenshots.')
+    parser.add_argument('-r', '--reset', dest='reset_index', action='store_true', help='Destroy and recreate the ES index.')
     parser.set_defaults(use_elasticsearch=False)
     parser.set_defaults(crawl_prices=False)
     parser.set_defaults(take_screenshots=False)
+    parser.set_defaults(reset_index=False)
     args = parser.parse_args()
 
     use_elasticsearch = args.use_elasticsearch
     crawl_prices = args.crawl_prices
     take_screenshots = args.take_screenshots
+    reset_index = args.reset_index
 
     # logs init
     logging.basicConfig(level=logging.INFO, filemode='w')

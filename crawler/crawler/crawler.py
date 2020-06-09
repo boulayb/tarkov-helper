@@ -11,19 +11,22 @@ import medical
 import price
 
 
-# format the crawled data to Elasticsearch bulk format 
-# {'index': {'_index': 'tarkov', '_type': 'loot', '_id': item_name}}
-# {'name': item_name, 'description': item_description, etc...}
-def to_es_bulk_format(data):
-    bulk = []
-
+# format the crawled data to Elasticsearch bulk format and send it by batch to prevent oversized bulk
+def send_bulk_by_batch(es, data, batch_size):
+    i = 0
+    bulk_data = []
     for obj_name, obj in data.items():
         index = {'index': {'_index': CONST_ES_INDEX, '_type': CONST_ES_TYPE, '_id': obj_name}}
         document = obj
-        bulk.append(index)
-        bulk.append(document)
-    
-    return bulk
+        bulk_data.append(index)
+        bulk_data.append(document)
+        i += 1
+        if i == batch_size:
+            es.bulk(index=CONST_ES_INDEX, body=bulk_data)
+            i = 0
+            bulk_data = []
+    if len(bulk_data) > 0:
+        es.bulk(index=CONST_ES_INDEX, body=bulk_data)
 
 
 def main():
@@ -39,16 +42,15 @@ def main():
         data = price.crawl_prices_tarkov_market(data)
 
     if use_elasticsearch is True:
-        # format to es bulk format
-        logger.info("Formating to bulk format")
-        bulk_data = to_es_bulk_format(data)
-
         # send to elasticsearch
         logger.info("Sending to elasticsearch")
         es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
-        if es.indices.exists(index=CONST_ES_INDEX) is False:
+        if reset_index is True and es.indices.exists(index=CONST_ES_INDEX):
+            es.indices.delete(index=CONST_ES_INDEX)
             es.indices.create(index=CONST_ES_INDEX)
-        es.bulk(index=CONST_ES_INDEX, body=bulk_data)
+        elif es.indices.exists(index=CONST_ES_INDEX) is False:
+            es.indices.create(index=CONST_ES_INDEX)
+        send_bulk_by_batch(es, data, 100)
 
     logger.info("Done!")
 
