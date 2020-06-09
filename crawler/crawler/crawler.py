@@ -11,6 +11,15 @@ import medical
 import price
 
 
+def test_bulk(data):
+    for doc in data:
+        yield {
+            "_index": CONST_ES_INDEX,
+            "_type": CONST_ES_TYPE,
+            "doc": doc
+        }
+
+
 # format the crawled data to Elasticsearch bulk format and send it by batch to prevent oversized bulk
 def send_bulk_by_batch(es, data, batch_size):
     i = 0
@@ -50,7 +59,8 @@ def main():
             es.indices.create(index=CONST_ES_INDEX)
         elif es.indices.exists(index=CONST_ES_INDEX) is False:
             es.indices.create(index=CONST_ES_INDEX)
-        send_bulk_by_batch(es, data, 100)
+        bulk(es, test_bulk(data))
+        # send_bulk_by_batch(es, data, 100)
 
     logger.info("Done!")
 
