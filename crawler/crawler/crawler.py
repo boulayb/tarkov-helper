@@ -18,7 +18,7 @@ def format_to_bulk(data):
         for item_name, item in item_dict.items():
             bulk_data = {
                 '_index': CONST_ES_INDEX,
-                '_type': item_type,
+                '_type': CONST_ES_TYPE,
                 '_id': item_name
             }
             bulk_data.update(item)
