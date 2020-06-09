@@ -33,4 +33,5 @@ TIPS_LIST = [
     'Stay frosty.',
     'Keep an eye on the clock.',
     'Think twice before selling that item.',
-    'Never speculate on the mayonnaise.']
+    'Never speculate on the mayonnaise.',
+    'Who drinks bleach, die clean.']
