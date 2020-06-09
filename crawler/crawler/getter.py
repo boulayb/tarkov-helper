@@ -127,7 +127,7 @@ def generic_get_category(item_soup, item_url, category_id):
         logger.info("Warning: " + category_id + " not found for item " + item_url)
         infos = None
 
-    return infos if len(infos) > 0 else None
+    return infos if infos and len(infos) > 0 else None
 
 
 # generic getter to get all text from the info table of an item
