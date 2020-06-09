@@ -16,7 +16,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('!command') or message.content.startswith('!co'):
+    if message.content.startswith('!command') or message.content.startswith('!co') or message.content.startswith('!c'):
         logger.info("From: '" + str(message.author) + "' - '" + message.content + "'")
         cleaned_message = ' '.join(message.content.split())
         words = cleaned_message.split(' ')
