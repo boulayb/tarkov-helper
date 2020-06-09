@@ -28,7 +28,6 @@ def crawl_item(item_url):
         'notes': None,
         'quests': None,
         'hideouts': None,
-        'trade': None,
         'price_day': None,
         'price_week': None,
         'price_slot_day': None,

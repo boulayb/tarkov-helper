@@ -194,7 +194,7 @@ def build_item_embed(item):
             locations_str = tools.build_string(item['locations'], item['url'] + "#Location", prefix='- ')['embed_str']
             embed.add_field(name='Locations', value=locations_str, inline=False)
 
-        if item['trade']:
+        if 'trade' in item and item['trade']:
             embed.set_image(url=item['trade'].replace('%22', '%2522'))
 
     except Exception as e:
