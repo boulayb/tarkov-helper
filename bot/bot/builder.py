@@ -156,7 +156,7 @@ def build_item_embed(item):
         else:
             embed.set_footer(text='Click title for more infos')
 
-        if len(item['notes']) > 0:
+        if item['notes']:
             notes_str = tools.build_string(item['notes'], item['url'] + "#Notes", prefix='- ')['embed_str']
             embed.add_field(name='Notes', value=notes_str, inline=False)
 
@@ -182,15 +182,15 @@ def build_item_embed(item):
         if item['trader_name'] and item['trader_price']:
             embed.add_field(name='Best merchant rebuy', value=str(item['trader_price']) + ' ₽ (' + str(int(item['trader_price'] / item['total_size'])) + ' ₽/slot) at ' + item['trader_name'], inline=True)
 
-        if len(item['quests']) > 0:
+        if item['quests']:
             quests_str = tools.build_string(item['quests'], item['url'] + "#Quests", prefix='- ')['embed_str']
             embed.add_field(name='Quests', value=quests_str, inline=False)
 
-        if len(item['hideouts']) > 0:
+        if item['hideouts']:
             hideouts_str = tools.build_string(item['hideouts'], item['url'] + "#Hideout", prefix='- ')['embed_str']
             embed.add_field(name='Hideouts', value=hideouts_str, inline=False)
 
-        if len(item['locations']) > 0:
+        if item['locations']:
             locations_str = tools.build_string(item['locations'], item['url'] + "#Location", prefix='- ')['embed_str']
             embed.add_field(name='Locations', value=locations_str, inline=False)
 
@@ -198,7 +198,7 @@ def build_item_embed(item):
             embed.set_image(url=item['trade'].replace('%22', '%2522'))
 
     except Exception as e:
-        logger.info("Warning: Embed build failed for item: " + item['name'] + " - Reason: " + e)
+        logger.info("Warning: Embed build failed for item: " + item['name'] + " - Reason: " + str(e))
         embed = build_error_embed(e)
 
     return embed
