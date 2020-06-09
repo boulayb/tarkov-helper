@@ -30,17 +30,17 @@ def crawl_prices_tarkov_market(data):
     items_list = market_json['items']
 
     for item in items_list:
-        item_name = item['enName'] if 'enName' in item else ''
-        item_price_day = item['avgDayPrice'] if 'avgDayPrice' in item else ''
-        item_price_week = item['avgWeekPrice'] if 'avgWeekPrice' in item else ''
-        item_price_slot_day = item['avgDayPricePerSlot'] if 'avgDayPricePerSlot' in item else ''
-        item_price_slot_week = item['avgWeekPricePerSlot'] if 'avgWeekPricePerSlot' in item else ''
-        item_price_change_day = item['change24'] if 'change24' in item else ''
-        item_price_change_week = item['change7d'] if 'change7d' in item else ''
-        item_trader_name = item['traderName'] if 'traderName' in item else ''
-        item_trader_price = item['traderPrice'] if 'traderPrice' in item else ''
-        item_price_date = item['priceUpdated'] if 'priceUpdated' in item else ''
-        item_is_worth_resell = True if (item_price_day != '' and item_trader_price != '') and (int(item_price_day) <= int(item_trader_price)) else False
+        item_name = item['enName'] if 'enName' in item else None
+        item_price_day = item['avgDayPrice'] if 'avgDayPrice' in item else None
+        item_price_week = item['avgWeekPrice'] if 'avgWeekPrice' in item else None
+        item_price_slot_day = item['avgDayPricePerSlot'] if 'avgDayPricePerSlot' in item else None
+        item_price_slot_week = item['avgWeekPricePerSlot'] if 'avgWeekPricePerSlot' in item else None
+        item_price_change_day = item['change24'] if 'change24' in item else None
+        item_price_change_week = item['change7d'] if 'change7d' in item else None
+        item_trader_name = item['traderName'] if 'traderName' in item else None
+        item_trader_price = item['traderPrice'] if 'traderPrice' in item else None
+        item_price_date = item['priceUpdated'] if 'priceUpdated' in item else None
+        item_is_worth_resell = True if (item_price_day and item_trader_price) and (int(item_price_day) <= int(item_trader_price)) else False
 
         if item_name in data:
             data[item_name]['price_day'] = item_price_day
