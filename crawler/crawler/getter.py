@@ -50,8 +50,29 @@ def get_item_type(item_details_table, item_url):
 def get_item_weight(item_details_table, item_url):
     res = generic_get_infos(item_details_table, item_url, "Weight")
     if res and 'kg' in res:
-        res_float = float(res.split('kg')[0])
-    return res_float
+        res = float(res.split('kg')[0])
+    return res
+
+
+# get the item use time
+def get_item_time(item_details_table, item_url):
+    res = generic_get_infos(item_details_table, item_url, "Use time")
+    if res and 's' in res:
+        res = float(res.split('s')[0])
+    return res
+
+
+# get the item merchant
+def get_item_merchant(item_details_table, item_url):
+    return generic_get_infos(item_details_table, item_url, "Sold by")
+
+
+# get the item effects
+def get_item_effect(item_details_table, item_url):
+    res = generic_get_infos(item_details_table, item_url, "Effect")
+    if res is None:
+        res = generic_get_infos(item_details_table, item_url, "Usage")    # sometimes Effect is called Usage on the wiki
+    return res
 
 
 # get the item size
@@ -106,11 +127,13 @@ def generic_get_category(item_soup, item_url, category_id):
                     for info in contents:
                         if isinstance(info, str) is False and info.name == 'a':
                             if info.has_attr('title') and info['title'] in CONST_EFFECT_LIST:
-                                children_res += info['title']
+                                children_res += "'" + info['title'] + "'"
                             elif info.has_attr('href') and info['href']:
                                 children_res += '[' + info.getText() + '](' + CONST_BASE_URL + info['href'] + ')'
                             else:
                                 children_res += info.getText()
+                        elif isinstance(info, str) is False and info.name == 'br':
+                            children_res += '\n'
                         elif isinstance(info, str) is False:
                             children_res += info.getText()
                         else:
@@ -126,11 +149,13 @@ def generic_get_category(item_soup, item_url, category_id):
                 for info in contents:
                     if isinstance(info, str) is False and info.name == 'a':
                         if info.has_attr('title') and info['title'] in CONST_EFFECT_LIST:
-                            current_node_res += info['title']
+                            current_node_res += "'" + info['title'] + "'"
                         elif info.has_attr('href') and info['href']:
                             current_node_res += '[' + info.getText() + '](' + CONST_BASE_URL + info['href'] + ')'
                         else:
                             current_node_res += info.getText()
+                    elif isinstance(info, str) is False and info.name == 'br':
+                        current_node_res += '\n'
                     elif isinstance(info, str) is False:
                         current_node_res += info.getText()
                     else:
@@ -142,7 +167,8 @@ def generic_get_category(item_soup, item_url, category_id):
         if images_found is True:
             infos.append('Check [wiki page](' + CONST_BASE_URL + item_url + '#' + category_id + ') for image')
     except Exception as e:
-        logger.info("Warning: " + category_id + " not found for item " + item_url + " - reason: " + str(e))
+        if "has no attribute 'parent'" not in str(e):   # do not display if it is because the item is not present on the page
+            logger.info("Warning: " + category_id + " not found for item " + item_url + " - reason: " + str(e))
         infos = None
 
     return infos if infos and len(infos) > 0 else None
@@ -151,16 +177,32 @@ def generic_get_category(item_soup, item_url, category_id):
 # generic getter to get all text from the info table of an item
 def generic_get_infos(item_details_table, item_url, info_id):
     try:
-        item_info = item_details_table.find(text=info_id).parent.parent.find('td', {'class': 'va-infobox-content'}).getText()
+        item_info = item_details_table.find(text=info_id).parent.parent.find('td', {'class': 'va-infobox-content'})
         if item_info is not None and item_info != "" and item_info != "\n":
-            info = item_info
+            current_node_res = ''
+            contents = item_info.contents
+            for info in contents:
+                if isinstance(info, str) is False and info.name == 'a':
+                    if info.has_attr('title') and info['title'] in CONST_EFFECT_LIST:
+                        current_node_res += " '" + info['title'] + "' "
+                    elif info.has_attr('href') and info['href']:
+                        current_node_res += '[' + info.getText() + '](' + CONST_BASE_URL + info['href'] + ')'
+                    else:
+                        current_node_res += info.getText()
+                elif isinstance(info, str) is False and info.name == 'br':
+                    current_node_res += '\n'
+                elif isinstance(info, str) is False:
+                    current_node_res += info.getText()  ### TODO: recursive method to deep search that whole mess, create new method 'generic_get_recursive(node, item_url)'
+                else:
+                    current_node_res += info
         else:
             raise Exception
-    except:
-        logger.info("Warning: " + info_id + " not found for item " + item_url)
-        info = None
+    except Exception as e:
+        if "has no attribute 'parent'" not in str(e):   # do not display if it is because the item is not present on the page
+            logger.info("Warning: " + info_id + " not found for item " + item_url + " - reason: " + str(e))
+        current_node_res = None
 
-    return info
+    return current_node_res
 
 
 # take screenshot of the trade & craft sections, concat them and upload to imgur, save link for ES

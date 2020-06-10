@@ -181,6 +181,8 @@ def build_item_embed(item):
             embed.add_field(name='Avg. price/slot', value=str(item['price_slot_day']) + ' ₽', inline=True)
         if item['trader_name'] and item['trader_price']:
             embed.add_field(name='Best merchant rebuy', value=str(item['trader_price']) + ' ₽ (' + str(int(item['trader_price'] / item['total_size'])) + ' ₽/slot) at ' + item['trader_name'], inline=True)
+        if item['merchant']:
+            embed.add_field(name='Sold by', value=item['merchant'], inline=True)
 
         if item['quests']:
             quests_str = tools.build_string(item['quests'], item['url'] + "#Quests", prefix='- ')['embed_str']
@@ -189,6 +191,10 @@ def build_item_embed(item):
         if item['hideouts']:
             hideouts_str = tools.build_string(item['hideouts'], item['url'] + "#Hideout", prefix='- ')['embed_str']
             embed.add_field(name='Hideouts', value=hideouts_str, inline=False)
+
+        if item['effect']:
+            effect_str = tools.build_string(item['effect'].split('\n'), item['url'], prefix='- ')['embed_str']
+            embed.add_field(name='Effect', value=effect_str, inline=False)
 
         if item['locations']:
             locations_str = tools.build_string(item['locations'], item['url'] + "#Location", prefix='- ')['embed_str']

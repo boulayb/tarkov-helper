@@ -27,6 +27,9 @@ def crawl_item(item_url):
         'locations': None,
         'notes': None,
         'quests': None,
+        'merchant': None,
+        'time': None,
+        'effect': None,
         'hideouts': None,
         'price_day': None,
         'price_week': None,
@@ -66,6 +69,9 @@ def crawl_item(item_url):
     item_data['total_size'] = tools.calculate_total_size(item_data['size'])
     item_data['weight'] = getter.get_item_weight(item_details_table, item_url)
     item_data['exp'] = getter.get_item_exp(item_details_table, item_url)
+    item_data['time'] = getter.get_item_time(item_details_table, item_url)
+    item_data['merchant'] = getter.get_item_merchant(item_details_table, item_url)
+    item_data['effect'] = getter.get_item_effect(item_details_table, item_url)
     item_data['locations'] = getter.get_item_locations(item_soup, item_url)
     item_data['notes'] = getter.get_item_notes(item_soup, item_url)
     item_data['quests'] = getter.get_item_quests(item_soup, item_url)
