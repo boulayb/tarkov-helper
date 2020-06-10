@@ -14,15 +14,14 @@ import price
 # format the crawled data to ES bulk format
 def format_to_bulk(data):
     bulk_data_list = []
-    for item_type, item_dict in data.items():
-        for item_name, item in item_dict.items():
-            bulk_data = {
-                '_index': CONST_ES_INDEX,
-                '_type': CONST_ES_TYPE,
-                '_id': item_name
-            }
-            bulk_data.update(item)
-            bulk_data_list.append(bulk_data)
+    for item_name, item in data.items():
+        bulk_data = {
+            '_index': CONST_ES_INDEX,
+            '_type': CONST_ES_TYPE,
+            '_id': item_name
+        }
+        bulk_data.update(item)
+        bulk_data_list.append(bulk_data)
     return bulk_data_list
 
 
@@ -31,8 +30,8 @@ def main():
     # result dict
     logger.info("Crawling")
     data = {}
-    data['loot'] = loot.crawl_category()
-    data['medical'] = medical.crawl_category()
+    data.update(loot.crawl_category())
+    data.update(medical.crawl_category())
 
     if crawl_prices is True:
         # item prices from tarkov market

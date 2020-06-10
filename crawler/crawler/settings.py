@@ -15,6 +15,8 @@ CONST_LOOT_GOBLIN = "https://eft-loot.com/page-data/index/page-data.json"
 CONST_TARKOV_MARKET = "https://tarkov-market.com/"
 CONST_TARKOV_MARKET_ITEMS = "https://tarkov-market.com/api/items?lang=en&search=&tag=&sort=&sort_direction=&skip=&limit=-1"
 
+CONST_EFFECT_LIST = ['Bloodloss', 'Fresh Wound', 'Restores HP', 'Pain', 'On Painkillers', 'Contusion', 'Fracture']
+
 CONST_LOOT_PAGE = "/Loot"
 CONST_MEDICAL_PAGE = "/Medical"
 

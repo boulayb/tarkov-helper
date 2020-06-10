@@ -101,30 +101,48 @@ def generic_get_category(item_soup, item_url, category_id):
             if current_node.name == 'ul':
                 # search for links in infos, if there is we keep them to display them
                 for children in current_node.findChildren(recursive=False):
-                    info = children.getText()
-                    links = children.find_all('a')
-                    links_dict = {link.getText():link['href'] for link in links}
-                    for text, link in links_dict.items():
-                        info = info.replace(text, '[' + text + '](' + CONST_BASE_URL + link + ')')
-                    infos.append(info)
+                    children_res = ''
+                    contents = children.contents
+                    for info in contents:
+                        if isinstance(info, str) is False and info.name == 'a':
+                            if info.has_attr('title') and info['title'] in CONST_EFFECT_LIST:
+                                children_res += info['title']
+                            elif info.has_attr('href') and info['href']:
+                                children_res += '[' + info.getText() + '](' + CONST_BASE_URL + info['href'] + ')'
+                            else:
+                                children_res += info.getText()
+                        elif isinstance(info, str) is False:
+                            children_res += info.getText()
+                        else:
+                            children_res += info
+                    infos.append(children_res)
 
             elif current_node.name == 'li' and images_found is False:
                 images_found = True
 
             elif current_node.name == 'p':
-                info = current_node.getText()
-                links = current_node.find_all('a')
-                links_dict = {link.getText():link['href'] for link in links}
-                for text, link in links_dict.items():
-                    info = info.replace(text, '[' + text + '](' + CONST_BASE_URL + link + ')')
-                infos.append(info)
+                current_node_res = ''
+                contents = current_node.contents
+                for info in contents:
+                    if isinstance(info, str) is False and info.name == 'a':
+                        if info.has_attr('title') and info['title'] in CONST_EFFECT_LIST:
+                            current_node_res += info['title']
+                        elif info.has_attr('href') and info['href']:
+                            current_node_res += '[' + info.getText() + '](' + CONST_BASE_URL + info['href'] + ')'
+                        else:
+                            current_node_res += info.getText()
+                    elif isinstance(info, str) is False:
+                        current_node_res += info.getText()
+                    else:
+                        current_node_res += info
+                infos.append(current_node_res)
 
             current_node = current_node.find_next_sibling()
 
         if images_found is True:
             infos.append('Check [wiki page](' + CONST_BASE_URL + item_url + '#' + category_id + ') for image')
-    except:
-        logger.info("Warning: " + category_id + " not found for item " + item_url)
+    except Exception as e:
+        logger.info("Warning: " + category_id + " not found for item " + item_url + " - reason: " + str(e))
         infos = None
 
     return infos if infos and len(infos) > 0 else None
