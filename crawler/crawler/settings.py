@@ -28,6 +28,8 @@ def init():
     global logger
     global use_elasticsearch
     global crawl_prices
+    global crawl_loot
+    global crawl_images
     global take_screenshots
     global reset_index
 
