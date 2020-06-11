@@ -1,11 +1,24 @@
 # -*- coding: utf-8 -*-
 
+
 # find the substring between substr1(included) and substr2(excluded)
-def find_substring(string, substr1, substr2):
-    idx1 = string.find(substr1)
-    cutstr = string[idx1:]
-    idx2 = cutstr.find(substr2)
-    res = cutstr[:idx2]
+def find_substring(string, substr1=None, substr2=None, exclude=False):
+    if substr1 is not None and exclude:
+        idx1 = string.find(substr1)
+        cutstr = string[idx1+len(substr1):]
+    elif substr1 is not None:
+        idx1 = string.find(substr1)
+        cutstr = string[idx1:]
+    else:
+        idx1 = 0
+        cutstr = string[idx1:]
+
+    if substr2 is not None:
+        idx2 = cutstr.find(substr2)
+        res = cutstr[:idx2]
+    else:
+        res = cutstr
+
     return res
 
 

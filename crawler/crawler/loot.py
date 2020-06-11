@@ -30,6 +30,8 @@ def crawl_item(item_url):
         'merchant': None,
         'time': None,
         'effect': None,
+        'buff': None,
+        'debuff': None,
         'hideouts': None,
         'price_day': None,
         'price_week': None,
@@ -71,13 +73,17 @@ def crawl_item(item_url):
     item_data['exp'] = getter.get_item_exp(item_details_table, item_url)
     item_data['time'] = getter.get_item_time(item_details_table, item_url)
     item_data['merchant'] = getter.get_item_merchant(item_details_table, item_url)
-    item_data['effect'] = getter.get_item_effect(item_details_table, item_url)
     item_data['locations'] = getter.get_item_locations(item_soup, item_url)
     item_data['notes'] = getter.get_item_notes(item_soup, item_url)
     item_data['quests'] = getter.get_item_quests(item_soup, item_url)
     item_data['hideouts'] = getter.get_item_hideouts(item_soup, item_url)
     if take_screenshots is True:
         item_data['trade'] = getter.get_item_trade(item_url, driver)
+    effects = getter.get_item_effect(item_details_table, item_url)
+    if effects is not None:
+        item_data['effect'] = effects['effect']
+        item_data['buff'] = effects['buff']
+        item_data['debuff'] = effects['debuff']
 
     # clean beautifulsoup parser and close webdriver page
     item_soup.decompose()

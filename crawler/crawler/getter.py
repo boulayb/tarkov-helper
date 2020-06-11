@@ -9,6 +9,7 @@ from selenium.webdriver.common.by import By
 from settings import *
 
 import image_tools
+import tools
 
 
 # get the item icon
@@ -58,7 +59,7 @@ def get_item_weight(item_details_table, item_url):
 def get_item_time(item_details_table, item_url):
     res = generic_get_infos(item_details_table, item_url, "Use time")
     if res and 's' in res:
-        res = float(res.split('s')[0])
+        res = int(res.split('s')[0])
     return res
 
 
@@ -69,9 +70,38 @@ def get_item_merchant(item_details_table, item_url):
 
 # get the item effects
 def get_item_effect(item_details_table, item_url):
-    res = generic_get_infos(item_details_table, item_url, "Effect")
-    if res is None:
-        res = generic_get_infos(item_details_table, item_url, "Usage")    # sometimes Effect is called Usage on the wiki
+    try:
+        effect_node = item_details_table.find(text="Effect")
+        if effect_node is None:
+            effect_node = item_details_table.find(text="Usage")   # sometimes Effect is named Usage
+        effect_node = effect_node.parent.parent.find('td', {'class': 'va-infobox-content'})
+        res = generic_get_recursive(effect_node, item_url)
+
+        if res is not None:
+            res_list = [i for i in res.split('\n') if i]   # remove empty strings
+            if len(res_list) > 0:
+                res = {'effect': None, 'buff': None, 'debuff': None}
+                res_string = '\n'.join(res_list)
+                if 'Buffs:' in res_string and 'Debuffs:' in res_string:
+                    res['effect'] = tools.find_substring(res_string, substr2="Buffs:").rstrip().lstrip()
+                    res['buff'] = tools.find_substring(res_string, "Buffs:", "Debuffs:", exclude=True).rstrip().lstrip()
+                    res['debuff'] = tools.find_substring(res_string, "Debuffs:", exclude=True).rstrip().lstrip()
+                elif 'Buffs:' in res_string:
+                    res['effect'] = tools.find_substring(res_string, substr2="Buffs:").rstrip().lstrip()
+                    res['buff'] = tools.find_substring(res_string, "Buffs:", exclude=True).rstrip().lstrip()
+                elif 'Debuffs:' in res_string:
+                    res['effect'] = tools.find_substring(res_string, substr2="Buffs:").rstrip().lstrip()
+                    res['debuff'] = tools.find_substring(res_string, "Debuffs:", exclude=True).rstrip().lstrip()
+                else:
+                    res['effect'] = res_string.rstrip().lstrip()
+            else:
+                res = None
+
+    except Exception as e:
+        if "has no attribute 'parent'" not in str(e):   # do not display if it is because the item is not present on the page
+            logger.info("Warning: Effect not found for item " + item_url + " - reason: " + str(e))
+        res = None
+
     return res
 
 
@@ -174,6 +204,37 @@ def generic_get_category(item_soup, item_url, category_id):
     return infos if infos and len(infos) > 0 else None
 
 
+def generic_get_recursive(node, item_url):
+    try:
+        res = ''
+        contents = node.contents
+        for info in contents:
+            if isinstance(info, str) is False and info.name == 'a':
+                if info.has_attr('title') and info['title'] in CONST_EFFECT_LIST:
+                    res += " '" + info['title'] + "' "
+                elif info.has_attr('href') and info['href']:
+                    res += '[' + info.getText() + '](' + CONST_BASE_URL + info['href'] + ')'
+                else:
+                    res += info.getText()
+            elif isinstance(info, str) is False and info.name == 'br':
+                res += '\n'
+            elif isinstance(info, str) is False and (info.name == 'ul' or info.name == 'li' or info.name == 'p'):
+                recursion = generic_get_recursive(info, item_url)
+                if recursion is not None:
+                    res += recursion
+            elif isinstance(info, str) is False:
+                res += info.getText()
+            else:
+                if 'Generic loot item' not in info and 'Quest item' not in info:
+                    res += info
+    except Exception as e:
+        if "has no attribute 'parent'" not in str(e):   # do not display if it is because the item is not present on the page
+            logger.info("Warning: recursive node " + str(node) + " not parsed for item " + item_url + " - reason: " + str(e))
+        res = None
+
+    return res
+
+
 # generic getter to get all text from the info table of an item
 def generic_get_infos(item_details_table, item_url, info_id):
     try:
@@ -192,7 +253,7 @@ def generic_get_infos(item_details_table, item_url, info_id):
                 elif isinstance(info, str) is False and info.name == 'br':
                     current_node_res += '\n'
                 elif isinstance(info, str) is False:
-                    current_node_res += info.getText()  ### TODO: recursive method to deep search that whole mess, create new method 'generic_get_recursive(node, item_url)'
+                    current_node_res += info.getText()
                 else:
                     current_node_res += info
         else:

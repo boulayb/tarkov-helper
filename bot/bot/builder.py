@@ -151,21 +151,22 @@ def build_item_embed(item):
         if item['icon']:
             embed.set_thumbnail(url=item['icon'])
 
-        if item['price_date']:
-            embed.set_footer(text='Click title for more infos - Last price update: ' + tools.days_since(tools.convert_date_tarkov_market(item['price_date'])))
-        else:
-            embed.set_footer(text='Click title for more infos')
-
         if item['notes']:
             notes_str = tools.build_string(item['notes'], item['url'] + "#Notes", prefix='- ')['embed_str']
             embed.add_field(name='Notes', value=notes_str, inline=False)
 
         if item['size']:
             embed.add_field(name='Size', value=item['size'] + ' (' + str(item['total_size']) + ')', inline=True)
+        else:
+            embed.add_field(name='Size', value='Not found', inline=True)
         if item['weight']:
             embed.add_field(name='Weight', value=str(item['weight']) + ' kg', inline=True)
+        else:
+            embed.add_field(name='Weight', value='Not found', inline=True)
         if item['exp']:
             embed.add_field(name='Exp on loot', value=item['exp'] + '\n', inline=True)
+        else:
+            embed.add_field(name='Exp on loot', value='Not found', inline=True)
 
         if item['price_day'] and item['price_change_day']:
             if item['price_change_day'] >= 0:   # add a '+' if it is positive
@@ -193,8 +194,19 @@ def build_item_embed(item):
             embed.add_field(name='Hideouts', value=hideouts_str, inline=False)
 
         if item['effect']:
-            effect_str = tools.build_string(item['effect'].split('\n'), item['url'], prefix='- ')['embed_str']
+            if item['time']:
+                effect_str = tools.build_string(('Use time: ' + str(item['time']) + 's\n' + item['effect']).split('\n'), item['url'], prefix='- ')['embed_str']
+            else:
+                effect_str = tools.build_string(item['effect'].split('\n'), item['url'], prefix='- ')['embed_str']
             embed.add_field(name='Effect', value=effect_str, inline=False)
+        elif item['time']:
+            embed.add_field(name='Effect', value='Use time: ' + str(item['time']) + 's\n', inline=False)
+        if item['buff']:
+            effect_str = tools.build_string(item['buff'].split('\n'), item['url'], prefix='- ')['embed_str']
+            embed.add_field(name='Buff', value=effect_str, inline=True)
+        if item['debuff']:
+            effect_str = tools.build_string(item['debuff'].split('\n'), item['url'], prefix='- ')['embed_str']
+            embed.add_field(name='Debuff', value=effect_str, inline=True)
 
         if item['locations']:
             locations_str = tools.build_string(item['locations'], item['url'] + "#Location", prefix='- ')['embed_str']
@@ -202,6 +214,11 @@ def build_item_embed(item):
 
         if 'trade' in item and item['trade']:
             embed.set_image(url=item['trade'].replace('%22', '%2522'))
+
+        if item['price_date']:
+            embed.set_footer(text='Click title for more infos - Last price update: ' + tools.days_since(tools.convert_date_tarkov_market(item['price_date'])))
+        else:
+            embed.set_footer(text='Click title for more infos')
 
     except Exception as e:
         logger.info("Warning: Embed build failed for item: " + item['name'] + " - Reason: " + str(e))
