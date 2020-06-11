@@ -61,6 +61,8 @@ def get_item_weight(item_details_table, item_url):
 # get the item use time
 def get_item_time(item_details_table, item_url):
     res = generic_get_infos(item_details_table, item_url, "Use time")
+    if res is None:
+        res = generic_get_infos(item_details_table, item_url, "Use Time")
     if res and 's' in res:
         res = int(res.split('s')[0])
     return res
