@@ -44,7 +44,10 @@ def get_item_name(item_soup, item_url):
 
 # get the item type
 def get_item_type(item_details_table, item_url):
-    return generic_get_infos(item_details_table, item_url, "Type")
+    item_type = generic_get_infos(item_details_table, item_url, "Type")
+    if item_type and 'http' in item_type:
+        item_type = item_type[item_type.find('[')+1:item_type.find(']')]    # do not return a link but only the name
+    return item_type
 
 
 # get the item weight

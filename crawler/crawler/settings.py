@@ -19,6 +19,7 @@ CONST_EFFECT_LIST = ['Bloodloss', 'Fresh Wound', 'Restores HP', 'Pain', 'On Pain
 
 CONST_LOOT_PAGE = "/Loot"
 CONST_MEDICAL_PAGE = "/Medical"
+CONST_PROVISION_PAGE = "/Provisions"
 
 
 def init():

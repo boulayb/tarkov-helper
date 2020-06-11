@@ -8,6 +8,7 @@ from settings import *
 
 import loot
 import medical
+import provision
 import price
 
 
@@ -32,6 +33,7 @@ def main():
     data = {}
     data.update(loot.crawl_category())
     data.update(medical.crawl_category())
+    data.update(provision.crawl_category())
 
     if crawl_prices is True:
         # item prices from tarkov market
