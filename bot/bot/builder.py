@@ -61,6 +61,18 @@ def build_error_embed(error):
     return embed
 
 
+# format an embed to display a wrong channel error
+def build_wrong_channel_embed():
+
+    embed = discord.Embed(
+        title='Wrong channel, please retry in #tarkov-helper.',
+        description='',
+        colour=discord.Colour.blue()
+    )
+
+    return embed
+
+
 # format an embed to display the default embed with the list of command available
 def build_help_embed():
 

@@ -9,6 +9,7 @@ import search
 
 # format should be "!command KEYWORD ITEM"
 ### TODO: Add command to give the 10 best worth_resell items
+### TODO: only acccept command on the tarkov-helper channel
 @client.event
 async def on_message(message):
 
@@ -18,12 +19,18 @@ async def on_message(message):
 
     if message.content.startswith('!command') or message.content.startswith('!co') or message.content.startswith('!c'):
         logger.info("From: '" + str(message.author) + "' - '" + message.content + "'")
+        channel = message.channel
         cleaned_message = ' '.join(message.content.split())
         words = cleaned_message.split(' ')
         embeds = []
 
+        # Wrong channel
+        print(channel)
+        if str(channel) != 'tarkov-helper':
+            embeds.append(builder.build_wrong_channel_embed())
+
         # ITEM command
-        if len(words) > 1 and words[1] == 'item':
+        elif len(words) > 1 and words[1] == 'item':
             search_query = ' '.join(words[2:]) # rejoin the user query with space
             result = search.search_item(search_query)
             if result['total'] == -1:
@@ -79,7 +86,6 @@ async def on_message(message):
         else:
             embeds.append(builder.build_help_embed())
 
-        channel = message.channel
         for embed in embeds:
             logger.info("Sending to: " + str(channel) + " - '" + str(embed.to_dict()) + "'")
             await channel.send(embed=embed)
