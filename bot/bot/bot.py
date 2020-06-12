@@ -9,7 +9,6 @@ import search
 
 # format should be "!command KEYWORD ITEM"
 ### TODO: Add command to give the 10 best worth_resell items
-### TODO: only acccept command on the tarkov-helper channel
 @client.event
 async def on_message(message):
 
@@ -25,7 +24,6 @@ async def on_message(message):
         embeds = []
 
         # Wrong channel
-        print(channel)
         if str(channel) != 'tarkov-helper':
             embeds.append(builder.build_wrong_channel_embed())
 
