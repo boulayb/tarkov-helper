@@ -88,6 +88,7 @@ def build_help_embed():
     embed.add_field(name='!command item [YOUR ITEM]', value='Display informations about the searched item.\nOpen original trade/craft image in webbrowser for full list.', inline=False)
     embed.add_field(name='!command search [YOUR ITEM]', value='Same as the item command but with advanced search features.\nClick [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) to learn more.', inline=False)
     embed.add_field(name='!command list [YOUR ITEM]', value='Advanced search returning the full list of results names.\nClick [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) to learn more.', inline=False)
+    embed.add_field(name='!command resell', value='Display a list of the 10 best resell earnings items in the last 24H. Easy money.', inline=False)
     embed.add_field(name='!command medical', value='Display a medical chart to help you.', inline=False)
     embed.add_field(name='!command injector', value='Display an injector chart to help you.', inline=False)
     embed.add_field(name='!command tips', value='Display a usefull tip to help you git gud.', inline=False)
@@ -100,7 +101,7 @@ def build_help_embed():
 
 
 # format an embeds list to list items names
-def build_list_embeds(items, query):
+def build_list_embeds(items):
 
     if len(items) == 0:
         embed = discord.Embed(
@@ -180,17 +181,17 @@ def build_item_embed(item):
         else:
             embed.add_field(name='Exp on loot', value='Not found', inline=True)
 
-        if item['price_day'] and item['price_change_day']:
+        if item['price_day'] is not None and item['price_change_day'] is not None:
             if item['price_change_day'] >= 0:   # add a '+' if it is positive
-                embed.add_field(name='Avg. price 24H', value=str(item['price_day']) + ' ₽' + " (+" + str(int(item['price_change_day'])) + "%)", inline=True)
+                embed.add_field(name='Avg. price 24H', value=str(item['price_day']) + ' ₽' + " (+" + str(item['price_change_day']) + "%)", inline=True)
             else:
-                embed.add_field(name='Avg. price 24H', value=str(item['price_day']) + ' ₽' + " (" + str(int(item['price_change_day'])) + "%)", inline=True)
-        if item['price_week'] and item['price_change_week']:
+                embed.add_field(name='Avg. price 24H', value=str(item['price_day']) + ' ₽' + " (" + str(item['price_change_day']) + "%)", inline=True)
+        if item['price_week'] is not None and item['price_change_week'] is not None:
             if item['price_change_week'] >= 0:  # add a '+' if it is positive
-                embed.add_field(name='Avg. price 7d', value=str(item['price_week']) + ' ₽' + " (+" + str(int(item['price_change_week'])) + "%)", inline=True)
+                embed.add_field(name='Avg. price 7d', value=str(item['price_week']) + ' ₽' + " (+" + str(item['price_change_week']) + "%)", inline=True)
             else:
-                embed.add_field(name='Avg. price 7d', value=str(item['price_week']) + ' ₽' + " (" + str(int(item['price_change_week'])) + "%)", inline=True)
-        if item['price_slot_day']:
+                embed.add_field(name='Avg. price 7d', value=str(item['price_week']) + ' ₽' + " (" + str(item['price_change_week']) + "%)", inline=True)
+        if item['price_slot_day'] is not None:
             embed.add_field(name='Avg. price/slot', value=str(item['price_slot_day']) + ' ₽', inline=True)
         if item['trader_name'] and item['trader_price']:
             embed.add_field(name='Best merchant rebuy', value=str(item['trader_price']) + ' ₽ (' + str(int(item['trader_price'] / item['total_size'])) + ' ₽/slot) at ' + item['trader_name'], inline=True)

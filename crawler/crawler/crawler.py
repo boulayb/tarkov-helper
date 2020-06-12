@@ -30,7 +30,8 @@ def format_to_bulk(data, index):
 def send_to_es(es, data, index):
     if reset_index is True and es.indices.exists(index=index):
         es.indices.delete(index=index)
-    if es.indices.exists(index=index) is False:
+        es.indices.create(index=index)
+    elif es.indices.exists(index=index) is False:
         es.indices.create(index=index)
     bulk_success, bulk_failed = bulk(es, format_to_bulk(data, index))
     logger.info("Bulk ended with " + str(bulk_success) + " success and " + str(bulk_failed))
