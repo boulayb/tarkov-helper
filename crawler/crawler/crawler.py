@@ -52,6 +52,7 @@ def main():
         items.update(provision.crawl_category())
 
         # item prices from tarkov market
+        ### TODO: separate price crawl from loot crawl and cron it every one or two hours
         if crawl_prices is True:
             logger.info("Crawling prices")
             items = price.crawl_prices_tarkov_market(items)

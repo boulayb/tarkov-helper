@@ -101,6 +101,7 @@ def build_help_embed():
 
 
 # format an embeds list to list items names
+### TODO: add a command to get the biggest and lowest % of price changes from 10 items
 def build_list_embeds(items):
 
     if len(items) == 0:
