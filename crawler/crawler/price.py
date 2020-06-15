@@ -54,8 +54,6 @@ def crawl_prices_tarkov_market(data):
             data[item_name]['resell_price'] = item_trader_price
             data[item_name]['price_date'] = item_price_date
             data[item_name]['worth_resell'] = item_is_worth_resell
-        else:
-            logger.info("Warning: Price not added, no object found for item " + item_name)
     
     return data    
 
@@ -80,7 +78,5 @@ def crawl_prices_loot_goblin(data):
             data[item_name]['price'] = item_price
             data[item_name]['price_slot'] = item_price_slot
             data[item_name]['price_date'] = item_price_date
-        else:
-            logger.info("Warning: Price not added, no object found for item " + item_name)
     
     return data

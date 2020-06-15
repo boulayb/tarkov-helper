@@ -34,7 +34,7 @@ def search_item(index, res_size=CONST_ES_RESULT_SIZE, scroll_time='0s'):
 
 # scroll scroll_id in ES and return a list of found items
 def scroll_item(scroll_id, scroll_time='0s'):
-    logger.info("Scrolling with scroll id: '" + scroll_id + "' and scroll time: '" + scroll_time + "'")
+    logger.info("Scrolling rest of results")
 
     items = []
     total = 0
