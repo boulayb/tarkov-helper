@@ -50,8 +50,8 @@ def crawl_prices_tarkov_market(data):
             data[item_name]['price_slot_week'] = item_price_slot_week
             data[item_name]['price_change_day'] = item_price_change_day
             data[item_name]['price_change_week'] = item_price_change_week
-            data[item_name]['trader_name'] = item_trader_name
-            data[item_name]['trader_price'] = item_trader_price
+            data[item_name]['resell_name'] = item_trader_name
+            data[item_name]['resell_price'] = item_trader_price
             data[item_name]['price_date'] = item_price_date
             data[item_name]['worth_resell'] = item_is_worth_resell
         else:

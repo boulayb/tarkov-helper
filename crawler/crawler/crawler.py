@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
-from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
 from settings import *
 
-import loot
-import medical
-import provision
+import item
 import price
+import search
 
 
 # format the crawled data to ES bulk format
@@ -28,51 +26,62 @@ def format_to_bulk(data, index):
 
 # send data to elasticsearch in index
 def send_to_es(es, data, index):
-    if reset_index is True and es.indices.exists(index=index):
-        es.indices.delete(index=index)
-        es.indices.create(index=index)
-    elif es.indices.exists(index=index) is False:
+    if es.indices.exists(index=index) is False:
         es.indices.create(index=index)
     bulk_success, bulk_failed = bulk(es, format_to_bulk(data, index))
     logger.info("Bulk ended with " + str(bulk_success) + " success and " + str(bulk_failed))
 
 
+# get all items from index as a list
+def get_items_from_index(index):
+    items = {}
+    result = search.search_item(index, res_size=50, scroll_time='10s')
+    if result['total'] != -1:
+        while len(result['items']) > 0:
+            for item in result['items']:
+                new_item = {item['name']: item}
+                items.update(new_item)
+            result = search.scroll_item(result['scroll_id'], scroll_time='10s')
+    return items
+
+
 def main():
 
-    items = None
-    images = None
+    if reset_index is True and es.indices.exists(index=CONST_ES_ITEM_INDEX):
+        es.indices.delete(index=CONST_ES_ITEM_INDEX)
+        es.indices.create(index=CONST_ES_ITEM_INDEX)
+
+    items = get_items_from_index(CONST_ES_ITEM_INDEX)
 
     # crawl items from the wiki
     if crawl_loot is True:
         logger.info("Crawling items")
+        items = item.crawl_category(items, CONST_LOOT_PAGE, ['List_of_loot'])
+        items = item.crawl_category(items, CONST_MEDICAL_PAGE, ['List_of_medical_supplies', 'List_of_Stimulators'])
+        items = item.crawl_category(items, CONST_PROVISION_PAGE, ['List'])
 
-        items = {}
-        items.update(loot.crawl_category())
-        items.update(medical.crawl_category())
-        items.update(provision.crawl_category())
+    # screenshots of trade and craft
+    if take_screenshots is True:
+        logger.info("Taking screenshots")
+        items = item.crawl_trade(items)
 
-        # item prices from tarkov market
-        ### TODO: separate price crawl from loot crawl and cron it every one or two hours
-        if crawl_prices is True:
-            logger.info("Crawling prices")
-            items = price.crawl_prices_tarkov_market(items)
+    # item prices from tarkov market
+    if crawl_prices is True:
+        logger.info("Crawling prices")
+        items = price.crawl_prices_tarkov_market(items)
 
     # crawl images from the wiki
     # if crawl_images is True:
     #     logger.info("Crawling images")
-
     #     images = {}
     #     images.update(medical.crawl_images())
 
     # send data to elasticsearch
     if use_elasticsearch is True:
         logger.info("Sending to elasticsearch")
-
-        es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
-        if items:
-            send_to_es(es, items, CONST_ES_ITEM_INDEX)
-        if images:
-            send_to_es(es, images, CONST_ES_IMAGE_INDEX)
+        send_to_es(es, items, CONST_ES_ITEM_INDEX)
+        # if images:
+        #     send_to_es(es, images, CONST_ES_IMAGE_INDEX)
 
     logger.info("Done!")
 

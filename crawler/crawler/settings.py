@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from elasticsearch import Elasticsearch
 from argparse import ArgumentParser
 
 import logging
 
 CONST_SELENIUM_DELAY = 1
+CONST_ES_RESULT_SIZE = 3
 CONST_ES_ITEM_INDEX = "tarkov-items"
 CONST_ES_IMAGE_INDEX = "tarkov-images"
 CONST_SCREENSHOTS_FOLDER = "crawler/screenshots"
@@ -32,6 +34,7 @@ def init():
     global crawl_images
     global take_screenshots
     global reset_index
+    global es
 
     # parse arguments
     parser = ArgumentParser('tarkov-helper_crawler')
@@ -64,6 +67,8 @@ def init():
     log_hdlr = logging.FileHandler("./logs_crawler.txt")
     log_hdlr.setFormatter(formatter)
     logger.addHandler(log_hdlr)
+
+    es = Elasticsearch(hosts=[{"host":'elasticsearch'}])
 
 
 init()

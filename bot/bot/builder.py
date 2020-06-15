@@ -194,10 +194,10 @@ def build_item_embed(item):
                 embed.add_field(name='Avg. price 7d', value=str(item['price_week']) + ' ₽' + " (" + str(item['price_change_week']) + "%)", inline=True)
         if item['price_slot_day'] is not None:
             embed.add_field(name='Avg. price/slot', value=str(item['price_slot_day']) + ' ₽', inline=True)
-        if item['trader_name'] and item['trader_price']:
-            embed.add_field(name='Best merchant rebuy', value=str(item['trader_price']) + ' ₽ (' + str(int(item['trader_price'] / item['total_size'])) + ' ₽/slot) at ' + item['trader_name'], inline=True)
-        if item['merchant']:
-            embed.add_field(name='Sold by', value=item['merchant'], inline=True)
+        if item['resell_name'] and item['resell_price']:
+            embed.add_field(name='Best dealer rebuy', value=str(item['resell_price']) + ' ₽ (' + str(int(item['resell_price'] / item['total_size'])) + ' ₽/slot) at ' + item['resell_name'], inline=True)
+        if item['dealer']:
+            embed.add_field(name='Sold by', value=item['dealer'], inline=True)
 
         if item['quests']:
             quests_str = tools.build_string(item['quests'], item['url'] + "#Quests", prefix='- ')['embed_str']
@@ -227,7 +227,7 @@ def build_item_embed(item):
             embed.add_field(name='Locations', value=locations_str, inline=False)
 
         if 'trade' in item and item['trade']:
-            embed.set_image(url=item['trade'].replace('%22', '%2522'))
+            embed.set_image(url=item['trade'].replace('%', '%25'))
 
         if item['price_date']:
             embed.set_footer(text='Click title for more infos - Last price update: ' + tools.days_since(tools.convert_date_tarkov_market(item['price_date'])))

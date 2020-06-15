@@ -84,8 +84,8 @@ def get_item_effect(item_details_table, item_url):
 
         if res is not None:
             res_list = [i for i in res.split('\n') if i]   # remove empty strings
+            res = {'effect': None, 'buff': None, 'debuff': None}
             if len(res_list) > 0:
-                res = {'effect': None, 'buff': None, 'debuff': None}
                 res_string = '\n'.join(res_list)
                 if 'Buffs:' in res_string and 'Debuffs:' in res_string:
                     res['effect'] = tools.find_substring(res_string, substr2="Buffs:").rstrip().lstrip()
@@ -99,13 +99,13 @@ def get_item_effect(item_details_table, item_url):
                     res['debuff'] = tools.find_substring(res_string, "Debuffs:", exclude=True).rstrip().lstrip()
                 else:
                     res['effect'] = res_string.rstrip().lstrip()
-            else:
-                res = None
+        else:
+            res = {'effect': None, 'buff': None, 'debuff': None}
 
     except Exception as e:
-        if "has no attribute 'parent'" not in str(e):   # do not display if it is because the item is not present on the page
+        if "has no attribute 'parent'" not in str(e):   # do not display error if it is because the item is not present on the page
             logger.info("Warning: Effect not found for item " + item_url + " - reason: " + str(e))
-        res = None
+        res = {'effect': None, 'buff': None, 'debuff': None}
 
     return res
 
@@ -202,7 +202,7 @@ def generic_get_category(item_soup, item_url, category_id):
         if images_found is True:
             infos.append('Check [wiki page](' + CONST_BASE_URL + item_url + '#' + category_id + ') for image')
     except Exception as e:
-        if "has no attribute 'parent'" not in str(e):   # do not display if it is because the item is not present on the page
+        if "has no attribute 'parent'" not in str(e):   # do not display error if it is because the item is not present on the page
             logger.info("Warning: " + category_id + " not found for item " + item_url + " - reason: " + str(e))
         infos = None
 
@@ -233,7 +233,7 @@ def generic_get_recursive(node, item_url):
                 if 'Generic loot item' not in info and 'Quest item' not in info:
                     res += info
     except Exception as e:
-        if "has no attribute 'parent'" not in str(e):   # do not display if it is because the item is not present on the page
+        if "has no attribute 'parent'" not in str(e):   # do not display error if it is because the item is not present on the page
             logger.info("Warning: recursive node " + str(node) + " not parsed for item " + item_url + " - reason: " + str(e))
         res = None
 
@@ -264,11 +264,11 @@ def generic_get_infos(item_details_table, item_url, info_id):
         else:
             raise Exception
     except Exception as e:
-        if "has no attribute 'parent'" not in str(e):   # do not display if it is because the item is not present on the page
+        if "has no attribute 'parent'" not in str(e):   # do not display error if it is because the item is not present on the page
             logger.info("Warning: " + info_id + " not found for item " + item_url + " - reason: " + str(e))
         current_node_res = None
 
-    return current_node_res
+    return current_node_res if current_node_res != '' else None
 
 
 # take screenshot of the trade & craft sections, concat them and upload to imgur, save link for ES
@@ -276,8 +276,9 @@ def get_item_trade(item_url, driver):
     try:
         popup = WebDriverWait(driver, CONST_SELENIUM_DELAY).until(EC.presence_of_element_located((By.XPATH, "//*[text()='ACCEPT']")))   # wait x seconds for page to load
         popup.click()   # click the page cookie popup so it doesn't hide the screenshots
-    except:
-        logger.info("Warning: Selenium couldn't parse the page for item " + item_url)
+    except Exception as e:
+        if 'Unable to locate element' not in str(e):
+            logger.info("Warning: Selenium couldn't parse the page for item " + item_url + " - reason: " + str(e))
         trades = None
         return trades
 
@@ -287,8 +288,9 @@ def get_item_trade(item_url, driver):
         crafting_table = crafting_title.find_element_by_xpath("../following-sibling::table[@class='wikitable']")
         crafting_screen = crafting_table.screenshot_as_png
         crafting_screen = Image.open(BytesIO(crafting_screen))  # uses PIL library to open image in memory
-    except:
-        logger.info("Warning: Crafting not found for item " + item_url)
+    except Exception as e:
+        if 'Unable to locate element' not in str(e):
+            logger.info("Warning: Crafting not found for item " + item_url + " - reason: " + str(e))
         crafting_screen = None
 
     # screenshot the trading section
@@ -297,8 +299,9 @@ def get_item_trade(item_url, driver):
         trading_table = trading_title.find_element_by_xpath("../following-sibling::table[@class='wikitable']")
         trading_screen = trading_table.screenshot_as_png
         trading_screen = Image.open(BytesIO(trading_screen))    # uses PIL library to open image in memory
-    except:
-        logger.info("Warning: Trading not found for item " + item_url)
+    except Exception as e:
+        if 'Unable to locate element' not in str(e):
+            logger.info("Warning: Trading not found for item " + item_url + " - reason: " + str(e))
         trading_screen = None
 
     # save the screenshot
