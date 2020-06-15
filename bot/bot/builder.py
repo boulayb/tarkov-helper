@@ -88,7 +88,7 @@ def build_help_embed():
     embed.add_field(name='!command item [YOUR ITEM]', value='Display informations about the searched item.\nOpen original trade/craft image in webbrowser for full list.', inline=False)
     embed.add_field(name='!command search [YOUR ITEM]', value='Same as the item command but with advanced search features.\nClick [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) to learn more.', inline=False)
     embed.add_field(name='!command list [YOUR ITEM]', value='Advanced search returning the full list of results names.\nClick [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html) to learn more.', inline=False)
-    embed.add_field(name='!command resell', value='Display a list of the 10 best resell earnings items in the last 24H. Easy money.', inline=False)
+    embed.add_field(name='!command resell [LIMIT]', value='Display a sorted list of the best resell earnings items in the last 24H. Easy money.', inline=False)
     embed.add_field(name='!command medical', value='Display a medical chart to help you.', inline=False)
     embed.add_field(name='!command injector', value='Display an injector chart to help you.', inline=False)
     embed.add_field(name='!command tips', value='Display a usefull tip to help you git gud.', inline=False)

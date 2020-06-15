@@ -68,8 +68,12 @@ async def on_message(message):
                     result = search.scroll_item(result['scroll_id'], scroll_time='10s')
 
         # RESELL command
-        ### TODO: Add limit argument to set a limit
         elif len(words) > 1 and words[1] == 'resell':
+            try:
+                limit = int(' '.join(words[2:]))
+            except:
+                limit = -1
+                pass
             result = search.search_item("worth_resell:true", res_size=50, advanced=True, scroll_time='10s') # get all worth resell items
             if result['total'] == -1:
                 embeds.append(builder.build_error_embed(result['items'][0]))
@@ -81,7 +85,16 @@ async def on_message(message):
                     worth_resell += result['items']
                     result = search.scroll_item(result['scroll_id'], scroll_time='10s')
                 worth_resell.sort(key=lambda x: x.get('trader_price') - x.get('price_day'), reverse=True)   # sort by best resell earnings (trader price - avg 24h price)
-                embeds.append(builder.build_list_embeds(worth_resell))
+                start = 0
+                end = 50
+                while start < len(worth_resell):
+                    if limit > 0 and end > limit:
+                        embeds.append(builder.build_list_embeds(worth_resell[start:limit]))
+                        break
+                    else:
+                        embeds.append(builder.build_list_embeds(worth_resell[start:end]))
+                        start = end
+                        end += 50
 
         # MEDICAL command
         elif len(words) > 1 and words[1] == 'medical':
