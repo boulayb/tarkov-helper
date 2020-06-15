@@ -11,7 +11,11 @@ def days_since(late_date):
         try:
             days_since = datetime.today() - late_date
             if days_since.days <= 0:
-                return 'today'
+                hours_since = int(days_since.total_seconds() / 3600)
+                if hours_since <= 0:
+                    return 'this hour'
+                else:
+                    return str(hours_since) + ' hours ago'
             elif days_since.days == 1:
                 return 'yesterday'
             else:
