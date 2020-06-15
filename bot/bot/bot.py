@@ -84,7 +84,7 @@ async def on_message(message):
                 while len(result['items']) > 0:
                     worth_resell += result['items']
                     result = search.scroll_item(result['scroll_id'], scroll_time='10s')
-                worth_resell.sort(key=lambda x: x.get('trader_price') - x.get('price_day'), reverse=True)   # sort by best resell earnings (trader price - avg 24h price)
+                worth_resell.sort(key=lambda x: x.get('resell_price') - x.get('price_day'), reverse=True)   # sort by best resell earnings (trader price - avg 24h price)
                 start = 0
                 end = 50
                 while start < len(worth_resell):
