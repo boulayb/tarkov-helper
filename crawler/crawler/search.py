@@ -5,7 +5,7 @@ from settings import *
 
 # search index in ES and return a list of found items
 def search_item(index, res_size=CONST_ES_RESULT_SIZE, scroll_time='0s'):
-    logger.info("Searching for all item in index: '" + str(CONST_ES_RESULT_SIZE) + "' with params size: '" + str(res_size) + "' scroll: '" + scroll_time + "'")
+    logger.info("Searching for all item in index: '" + index + "' with params size: '" + str(res_size) + "' scroll: '" + scroll_time + "'")
 
     items = []
     total = 0
