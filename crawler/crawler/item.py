@@ -72,7 +72,7 @@ def crawl_item(items, name, item_url):
     items[name]['weight'] = getter.get_item_weight(item_details_table, item_url)
     items[name]['exp'] = getter.get_item_exp(item_details_table, item_url)
     items[name]['time'] = getter.get_item_time(item_details_table, item_url)
-    items[name]['merchant'] = getter.get_item_merchant(item_details_table, item_url)
+    items[name]['dealer'] = getter.get_item_dealer(item_details_table, item_url)
     items[name]['locations'] = getter.get_item_locations(item_soup, item_url)
     items[name]['notes'] = getter.get_item_notes(item_soup, item_url)
     items[name]['quests'] = getter.get_item_quests(item_soup, item_url)

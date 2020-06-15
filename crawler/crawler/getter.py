@@ -69,7 +69,7 @@ def get_item_time(item_details_table, item_url):
 
 
 # get the item merchant
-def get_item_merchant(item_details_table, item_url):
+def get_item_dealer(item_details_table, item_url):
     return generic_get_infos(item_details_table, item_url, "Sold by")
 
 
