@@ -18,6 +18,7 @@ def crawl_trade(items):
     try:
         for name, item in items.items():
             logger.info("Taking screenshot from " + item['url'])
+
             # open page via webdriver
             driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
             driver.get(item['url'])
@@ -25,7 +26,8 @@ def crawl_trade(items):
             item['trade'] = getter.get_item_trade(item['url'].replace(CONST_BASE_URL, ''), driver)
 
             driver.close()
-    except:
+    except Exception as e:
+        logger.info("Warning: Failed crawling trades, reason: " + str(e))
         pass
 
     return items
@@ -120,7 +122,8 @@ def crawl_category(items, url, ids_list):
 
         # clean beautifulsoup parser
         page_soup.decompose()
-    except:
+    except Exception as e:
+        logger.info("Warning: Failed crawling url: " + url + " - reason: " + str(e))
         pass
 
     return items

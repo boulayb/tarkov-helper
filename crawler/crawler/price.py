@@ -55,7 +55,8 @@ def crawl_prices_tarkov_market(data):
                 data[item_name]['resell_price'] = item_trader_price
                 data[item_name]['price_date'] = item_price_date
                 data[item_name]['worth_resell'] = item_is_worth_resell
-    except:
+    except Exception as e:
+        logger.info("Warning: Failed crawling prices, reason: " + str(e))
         pass
 
     return data    
