@@ -15,16 +15,19 @@ import tools
 # screenshot the trade & craft category
 def crawl_trade(items):
 
-    for name, item in items.items():
-        logger.info("Taking screenshot from " + item['url'])
-        # open page via webdriver
-        driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
-        driver.get(item['url'])
+    try:
+        for name, item in items.items():
+            logger.info("Taking screenshot from " + item['url'])
+            # open page via webdriver
+            driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
+            driver.get(item['url'])
 
-        item['trade'] = getter.get_item_trade(item['url'].replace(CONST_BASE_URL, ''), driver)
+            item['trade'] = getter.get_item_trade(item['url'].replace(CONST_BASE_URL, ''), driver)
 
-        driver.close()
-    
+            driver.close()
+    except:
+        pass
+
     return items
 
 
@@ -100,21 +103,24 @@ def crawl_table(items, loot_table):
 # crawl all links to item from the main loot page to get their infos
 def crawl_category(items, url, ids_list):
 
-    # get the wiki page
-    logger.info("Getting HTML from " + CONST_BASE_URL + url)
-    r = requests.get(CONST_BASE_URL + url)
-    r.raise_for_status()
+    try:
+        # get the wiki page
+        logger.info("Getting HTML from " + CONST_BASE_URL + url)
+        r = requests.get(CONST_BASE_URL + url)
+        r.raise_for_status()
 
-    # init beautifulsoup parser
-    page_html = r.text
-    page_soup = BeautifulSoup(page_html, 'html.parser')
+        # init beautifulsoup parser
+        page_html = r.text
+        page_soup = BeautifulSoup(page_html, 'html.parser')
 
-    # get the loot table
-    for table_id in ids_list:
-        table = page_soup.find(id=table_id).parent.find_next('table', {'class': 'wikitable'}).find_all("tr")
-        items = crawl_table(items, table)
+        # get the loot table
+        for table_id in ids_list:
+            table = page_soup.find(id=table_id).parent.find_next('table', {'class': 'wikitable'}).find_all("tr")
+            items = crawl_table(items, table)
 
-    # clean beautifulsoup parser
-    page_soup.decompose()
+        # clean beautifulsoup parser
+        page_soup.decompose()
+    except:
+        pass
 
     return items

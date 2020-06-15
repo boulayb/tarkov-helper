@@ -47,10 +47,12 @@ def get_items_from_index(index):
 
 def main():
 
+    # remove existing index if asked for
     if reset_index is True and es.indices.exists(index=CONST_ES_ITEM_INDEX):
         es.indices.delete(index=CONST_ES_ITEM_INDEX)
         es.indices.create(index=CONST_ES_ITEM_INDEX)
 
+    # get the existing items from index to update them
     items = get_items_from_index(CONST_ES_ITEM_INDEX)
 
     # crawl items from the wiki
