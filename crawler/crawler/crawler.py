@@ -67,6 +67,7 @@ def main():
         items = item.crawl_category(items, CONST_POUCH_PAGE, ['List'])
         items = item.crawl_category(items, CONST_HEADWEAR_PAGE, ['Mount', 'Armored', 'Vanity'])
         items = item.crawl_category(items, CONST_FACEWEAR_PAGE, ['Armored', 'Vanity'])
+        items = item.crawl_category(items, CONST_HEADSET_PAGE, ['List'])
 
     # screenshots of trade and craft
     if take_screenshots is True:
