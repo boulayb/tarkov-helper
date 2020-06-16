@@ -127,6 +127,12 @@ def get_item_penalties(item_soup, item_url):
     elif block_face:
         penalties = 'Block Face cover:' + block_face
 
+    block_headwear = generic_get_infos(item_soup, item_url, 'Blocks Headwear')
+    if block_headwear and penalties:
+        penalties += '\nBlock Headwear: ' + block_headwear
+    elif block_headwear:
+        penalties = 'Block Headwear:' + block_headwear
+
     return penalties
 
 
