@@ -68,11 +68,6 @@ def get_item_time(item_details_table, item_url):
     return res
 
 
-# get the item merchant
-def get_item_dealer(item_details_table, item_url):
-    return generic_get_infos(item_details_table, item_url, "Sold by")
-
-
 # get the item effects
 def get_item_effect(item_details_table, item_url):
     try:
@@ -108,31 +103,6 @@ def get_item_effect(item_details_table, item_url):
         res = {'effect': None, 'buff': None, 'debuff': None}
 
     return res
-
-
-# get the item size
-def get_item_size(item_details_table, item_url):
-    return generic_get_infos(item_details_table, item_url, "Grid size")
-
-
-# get the item exp
-def get_item_exp(item_details_table, item_url):
-    return generic_get_infos(item_details_table, item_url, "Loot experience")
-
-
-# get the item description
-def get_item_description(item_soup, item_url):
-    return generic_get_category(item_soup, item_url, "Description")
-
-
-# get the item locations
-def get_item_locations(item_soup, item_url):
-    return generic_get_category(item_soup, item_url, "Location")
-
-
-# get the item hideout needs
-def get_item_hideouts(item_soup, item_url):
-    return generic_get_category(item_soup, item_url, "Hideout")
 
 
 # get the item quests needs

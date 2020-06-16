@@ -64,6 +64,7 @@ def main():
         items = item.crawl_category(items, CONST_CONTAINER_PAGE, ['List'])
         items = item.crawl_category(items, CONST_EYEWEAR_PAGE, ['List'])
         items = item.crawl_category(items, CONST_ARMBAND_PAGE, ['List'])
+        items = item.crawl_category(items, CONST_POUCH_PAGE, ['List'])
 
     # screenshots of trade and craft
     if take_screenshots is True:
