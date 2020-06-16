@@ -165,10 +165,6 @@ def build_item_embed(item):
         if item['icon']:
             embed.set_thumbnail(url=item['icon'])
 
-        if item['notes']:
-            notes_str = tools.build_string(item['notes'], item['url'] + "#Notes", prefix='- ')['embed_str']
-            embed.add_field(name='Notes', value=notes_str, inline=False)
-
         if item['size']:
             embed.add_field(name='Size', value=item['size'] + ' (' + str(item['total_size']) + ')', inline=True)
         else:
@@ -198,6 +194,10 @@ def build_item_embed(item):
             embed.add_field(name='Best dealer rebuy', value=str(item['resell_price']) + ' ₽ (' + str(int(item['resell_price'] / item['total_size'])) + ' ₽/slot) at ' + item['resell_name'], inline=True)
         if item['dealer']:
             embed.add_field(name='Sold by', value=item['dealer'], inline=True)
+
+        if item['notes']:
+            notes_str = tools.build_string(item['notes'], item['url'] + "#Notes", prefix='- ')['embed_str']
+            embed.add_field(name='Notes', value=notes_str, inline=False)
 
         if item['inventory']:
             embed.add_field(name='Inventory', value=item['inventory'], inline=False)
