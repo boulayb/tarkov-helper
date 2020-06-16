@@ -194,10 +194,23 @@ def build_item_embed(item):
             embed.add_field(name='Best dealer rebuy', value=str(item['resell_price']) + ' ₽ (' + str(int(item['resell_price'] / item['total_size'])) + ' ₽/slot) at ' + item['resell_name'], inline=True)
         if item['dealer']:
             embed.add_field(name='Sold by', value=item['dealer'], inline=True)
-
+        
         if item['notes']:
             notes_str = tools.build_string(item['notes'], item['url'] + "#Notes", prefix='- ')['embed_str']
             embed.add_field(name='Notes', value=notes_str, inline=False)
+
+        if item['zone']:
+            embed.add_field(name='Armor zones', value=item['zone'], inline=True)
+        if item['class']:
+            embed.add_field(name='Armor class', value=item['class'], inline=True)
+        if item['durability']:
+            embed.add_field(name='Durability', value=item['durability'], inline=True)
+        if item['material']:
+            embed.add_field(name='Material', value=item['material'], inline=True)
+        if item['ricochet']:
+            embed.add_field(name='Ricochet chance', value=item['ricochet'], inline=True)
+        if item['segment']:
+            embed.add_field(name='Armor segments', value=item['segment'], inline=True)
 
         if item['inventory']:
             embed.add_field(name='Inventory', value=item['inventory'], inline=False)
@@ -209,6 +222,10 @@ def build_item_embed(item):
         if item['hideouts']:
             hideouts_str = tools.build_string(item['hideouts'], item['url'] + "#Hideout", prefix='- ')['embed_str']
             embed.add_field(name='Hideouts', value=hideouts_str, inline=False)
+
+        if item['penalties']:
+            penalties_str = tools.build_string(item['penalties'].split('\n'), item['url'], prefix='- ')['embed_str']
+            embed.add_field(name='Penalties', value=penalties_str, inline=False)
 
         if item['effect']:
             if item['time']:

@@ -105,6 +105,31 @@ def get_item_effect(item_details_table, item_url):
     return res
 
 
+# get the item penalties and blocks
+def get_item_penalties(item_soup, item_url):
+    penalties = generic_get_infos(item_soup, item_url, 'Penalties')
+
+    block_headset = generic_get_infos(item_soup, item_url, 'Blocks Headset')
+    if block_headset and penalties:
+        penalties += '\nBlock Headset: ' + block_headset
+    elif block_headset:
+        penalties = 'Block Headset: ' + block_headset
+
+    block_eyewear = generic_get_infos(item_soup, item_url, 'Blocks Eyewear')
+    if block_eyewear and penalties:
+        penalties += '\nBlock Eyewear: ' + block_eyewear
+    elif block_eyewear:
+        penalties = 'Block Eyewear: ' + block_eyewear
+
+    block_face = generic_get_infos(item_soup, item_url, 'Blocks Face cover')
+    if block_face and penalties:
+        penalties += '\nBlock Face cover: ' + block_face
+    elif block_face:
+        penalties = 'Block Face cover:' + block_face
+
+    return penalties
+
+
 # get the item quests needs
 def get_item_quests(item_soup, item_url):
     quests = generic_get_category(item_soup, item_url, "Quests")

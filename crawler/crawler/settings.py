@@ -26,6 +26,7 @@ CONST_CONTAINER_PAGE = "/Containers"
 CONST_EYEWEAR_PAGE = "/Eyewear"
 CONST_ARMBAND_PAGE = "/Armbands"
 CONST_POUCH_PAGE = "/Secure_containers"
+CONST_HEADWEAR_PAGE = "/Headwear"
 
 
 def init():
