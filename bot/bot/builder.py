@@ -202,7 +202,7 @@ def build_item_embed(item):
         if item['zone']:
             embed.add_field(name='Armor zones', value=item['zone'], inline=True)
         if item['class']:
-            embed.add_field(name='Armor class', value="class " + item['class'], inline=True)
+            embed.add_field(name='Armor class', value="Class " + item['class'], inline=True)
         if item['durability']:
             embed.add_field(name='Durability', value=item['durability'] + "/" + item['durability'], inline=True)
         if item['material']:
