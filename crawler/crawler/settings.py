@@ -29,6 +29,7 @@ CONST_POUCH_PAGE = "/Secure_containers"
 CONST_HEADWEAR_PAGE = "/Headwear"
 CONST_FACEWEAR_PAGE = "/Face_cover"
 CONST_HEADSET_PAGE = "/Headsets"
+CONST_HEADGEAR_PAGE = "/Gear_components"
 
 
 def init():
