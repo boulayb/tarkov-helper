@@ -15,10 +15,9 @@ import tools
 # screenshot the trade & craft category
 def crawl_trade(items):
 
-    try:
-        for name, item in items.items():
-            logger.info("Taking screenshot from " + item['url'])
-
+    for name, item in items.items():
+        logger.info("Taking screenshot from " + item['url'])
+        try:
             # open page via webdriver
             driver = webdriver.Remote("http://webdriver:4444/wd/hub", DesiredCapabilities.FIREFOX)
             driver.get(item['url'])
@@ -26,9 +25,9 @@ def crawl_trade(items):
             item['trade'] = getter.get_item_trade(item['url'].replace(CONST_BASE_URL, ''), driver)
 
             driver.close()
-    except Exception as e:
-        logger.info("Warning: Failed crawling trades, reason: " + str(e))
-        pass
+        except Exception as e:
+            logger.info("Warning: Failed crawling trades for item url: " + item['url'].replace(CONST_BASE_URL, '') +  " - reason: " + str(e))
+            pass
 
     return items
 
@@ -92,12 +91,20 @@ def crawl_item(items, name, item_url):
 def crawl_table(items, loot_table):
 
     for loot_item in loot_table[1:]: # each row of the table is a loot item, except first one (titles)
-        loot_infos = loot_item.find_all("th")   # 0=icon, 1=name+link, 2=type, etc...
-        loot_name = loot_infos[1].find("a")
-        if loot_name is not None:
-            link = loot_name['href']
-            name = loot_name.getText()
-            items = crawl_item(items, name, link)
+        link = None
+        try:
+            loot_infos = loot_item.find_all("th")   # 0=icon, 1=name+link, 2=type, etc...
+            loot_name = loot_infos[1].find("a")
+            if loot_name is not None:
+                link = loot_name['href']
+                name = loot_name.getText()
+                items = crawl_item(items, name, link)
+        except Exception as e:
+            if link:
+                logger.info("Warning: Failed crawling item for url: " + link + " - reason: " + str(e))
+            else:
+                logger.info("Warning: Failed crawling loot table - reason: " + str(e))
+            pass
 
     return items
 

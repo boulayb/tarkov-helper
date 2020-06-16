@@ -137,12 +137,26 @@ def get_item_hideouts(item_soup, item_url):
 
 # get the item quests needs
 def get_item_quests(item_soup, item_url):
-    return generic_get_category(item_soup, item_url, "Quests")
+    quests = generic_get_category(item_soup, item_url, "Quests")
+    rewards = generic_get_category(item_soup, item_url, "Quest rewards")
+    if quests and rewards:
+        return quests + rewards
+    elif quests:
+        return quests
+    else:
+        return rewards
 
 
 # get the item notes
 def get_item_notes(item_soup, item_url):
-    return generic_get_category(item_soup, item_url, "Notes")
+    notes = generic_get_category(item_soup, item_url, "Notes")
+    info = generic_get_category(item_soup, item_url, "Info")
+    if notes and info:
+        return notes + info
+    elif notes:
+        return notes
+    else:
+        return info
 
 
 # generic getter to get all text and links from a category of an item

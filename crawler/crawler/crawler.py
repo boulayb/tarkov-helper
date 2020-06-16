@@ -61,6 +61,9 @@ def main():
         items = item.crawl_category(items, CONST_LOOT_PAGE, ['List_of_loot'])
         items = item.crawl_category(items, CONST_MEDICAL_PAGE, ['List_of_medical_supplies', 'List_of_Stimulators'])
         items = item.crawl_category(items, CONST_PROVISION_PAGE, ['List'])
+        items = item.crawl_category(items, CONST_CONTAINER_PAGE, ['List'])
+        items = item.crawl_category(items, CONST_EYEWEAR_PAGE, ['List'])
+        items = item.crawl_category(items, CONST_ARMBAND_PAGE, ['List'])
 
     # screenshots of trade and craft
     if take_screenshots is True:

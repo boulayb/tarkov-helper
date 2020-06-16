@@ -167,7 +167,7 @@ def build_item_embed(item):
 
         if item['notes']:
             notes_str = tools.build_string(item['notes'], item['url'] + "#Notes", prefix='- ')['embed_str']
-            embed.add_field(name='Notes', value=notes_str, inline=False)
+            embed.add_field(name='Notes and infos', value=notes_str, inline=False)
 
         if item['size']:
             embed.add_field(name='Size', value=item['size'] + ' (' + str(item['total_size']) + ')', inline=True)
@@ -201,7 +201,7 @@ def build_item_embed(item):
 
         if item['quests']:
             quests_str = tools.build_string(item['quests'], item['url'] + "#Quests", prefix='- ')['embed_str']
-            embed.add_field(name='Quests', value=quests_str, inline=False)
+            embed.add_field(name='Quests and rewards', value=quests_str, inline=False)
 
         if item['hideouts']:
             hideouts_str = tools.build_string(item['hideouts'], item['url'] + "#Hideout", prefix='- ')['embed_str']
