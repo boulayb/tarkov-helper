@@ -137,7 +137,7 @@ def get_item_penalties(item_soup, item_url):
     if block_armor and penalties:
         penalties += '\nBlocks Armor: ' + block_armor
     elif block_armor:
-        penalties = 'Blocks Armor:' + block_armor
+        penalties = 'Blocks Armor: ' + block_armor
 
     return penalties
 
