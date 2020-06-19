@@ -133,6 +133,12 @@ def get_item_penalties(item_soup, item_url):
     elif block_headwear:
         penalties = 'Block Headwear:' + block_headwear
 
+    block_armor = generic_get_infos(item_soup, item_url, 'Blocks Armor')
+    if block_armor and penalties:
+        penalties += '\nBlocks Armor: ' + block_armor
+    elif block_armor:
+        penalties = 'Blocks Armor:' + block_armor
+
     return penalties
 
 

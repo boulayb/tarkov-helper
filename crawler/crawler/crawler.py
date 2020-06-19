@@ -69,6 +69,9 @@ def main():
         items = item.crawl_category(items, CONST_FACEWEAR_PAGE, ['Armored', 'Vanity'])
         items = item.crawl_category(items, CONST_HEADSET_PAGE, ['List'])
         items = item.crawl_category(items, CONST_HEADGEAR_PAGE, ['Night_vision_devices', 'Thermal_vision_devices', 'Visors', 'Additional_armor', 'Mounts', 'Vanity'])
+        items = item.crawl_category(items, CONST_BACKPACK_PAGE, ['List'])
+        items = item.crawl_category(items, CONST_ARMOR_PAGE, ['List'])
+        items = item.crawl_category(items, CONST_CHESTRIG_PAGE, ['Armored', 'Unarmored'])
 
     # screenshots of trade and craft
     if take_screenshots is True:

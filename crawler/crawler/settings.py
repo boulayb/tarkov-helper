@@ -30,6 +30,9 @@ CONST_HEADWEAR_PAGE = "/Headwear"
 CONST_FACEWEAR_PAGE = "/Face_cover"
 CONST_HEADSET_PAGE = "/Headsets"
 CONST_HEADGEAR_PAGE = "/Gear_components"
+CONST_BACKPACK_PAGE = "/Backpacks"
+CONST_CHESTRIG_PAGE = "/Chest_rigs"
+CONST_ARMOR_PAGE = "/Armor_vests"
 
 
 def init():
