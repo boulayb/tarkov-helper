@@ -69,9 +69,11 @@ def crawl_item(items, name, item_url):
     items[name]['type'] = getter.get_item_type(item_details_table, item_url)
     items[name]['time'] = getter.get_item_time(item_details_table, item_url)
     items[name]['weight'] = getter.get_item_weight(item_details_table, item_url)
+    items[name]['locations'] = getter.get_item_locations(item_soup, item_url)
     items[name]['penalties'] = getter.get_item_penalties(item_details_table, item_url)
+    items[name]['lock_location'] = getter.generic_get_category(item_soup, item_url, "Lock_Locations")
+    items[name]['behind_lock'] = getter.generic_get_category(item_soup, item_url, "Behind_the_Lock")
     items[name]['hideouts'] = getter.generic_get_category(item_soup, item_url, "Hideout")
-    items[name]['locations'] = getter.generic_get_category(item_soup, item_url, "Location")
     items[name]['dealer'] = getter.generic_get_infos(item_details_table, item_url, "Sold by")
     items[name]['description'] = getter.generic_get_category(item_soup, item_url, "Description")
     items[name]['exp'] = getter.generic_get_infos(item_details_table, item_url, "Loot experience")
@@ -96,12 +98,12 @@ def crawl_item(items, name, item_url):
 
 
 # crawl links to item from table
-def crawl_table(items, loot_table):
+def crawl_table(items, loot_table, tab=False):
 
     for loot_item in loot_table[1:]: # each row of the table is a loot item, except first one (titles)
         link = None
         try:
-            loot_infos = loot_item.find_all("th")   # 0=icon, 1=name+link, 2=type, etc...
+            loot_infos = loot_item.find_all(['th', 'td'])   # 0=icon, 1=name+link, 2=type, etc...
             loot_name = loot_infos[1].find("a")
             if loot_name is not None:
                 link = loot_name['href']
@@ -132,8 +134,15 @@ def crawl_category(items, url, ids_list):
 
         # get the loot table
         for table_id in ids_list:
-            table = page_soup.find(id=table_id).parent.find_next('table', {'class': 'wikitable'}).find_all("tr")
-            items = crawl_table(items, table)
+            table = page_soup.find(id=table_id).parent.find_next('table', {'class': 'wikitable'})
+            table_div = table.find_parent('div')
+            if table_div and "tabbertab" in table_div['class']:
+                all_divs = [elem for elem in table_div.find_parent('div') if getattr(elem, 'name', None) == 'div']
+                for div in all_divs:
+                    table = div.find_next('table', {'class': 'wikitable'})
+                    items = crawl_table(items, table.find_all("tr"), tab=True)
+            else:
+                items = crawl_table(items, table.find_all("tr"))
 
         # clean beautifulsoup parser
         page_soup.decompose()

@@ -72,6 +72,7 @@ def main():
         items = item.crawl_category(items, CONST_BACKPACK_PAGE, ['List'])
         items = item.crawl_category(items, CONST_ARMOR_PAGE, ['List'])
         items = item.crawl_category(items, CONST_CHESTRIG_PAGE, ['Armored', 'Unarmored'])
+        items = item.crawl_category(items, CONST_KEYS_PAGE, ['Keys_&_Keycards'])
 
     # screenshots of trade and craft
     if take_screenshots is True:

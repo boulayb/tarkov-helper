@@ -33,6 +33,7 @@ CONST_HEADGEAR_PAGE = "/Gear_components"
 CONST_BACKPACK_PAGE = "/Backpacks"
 CONST_CHESTRIG_PAGE = "/Chest_rigs"
 CONST_ARMOR_PAGE = "/Armor_vests"
+CONST_KEYS_PAGE = "/Keys_%26_Intel"
 
 
 def init():

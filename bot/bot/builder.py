@@ -245,6 +245,12 @@ def build_item_embed(item):
         if item['locations']:
             locations_str = tools.build_string(item['locations'], item['url'] + "#Location", prefix='- ')['embed_str']
             embed.add_field(name='Locations', value=locations_str, inline=False)
+        if item['lock_location']:
+            lock_location_str = tools.build_string(item['lock_location'], item['url'] + "#Lock_Locations", prefix='- ')['embed_str']
+            embed.add_field(name='Lock location', value=lock_location_str, inline=False)
+        if item['behind_lock']:
+            behind_lock_str = tools.build_string(item['behind_lock'], item['url'] + "#Behind_the_Lock", prefix='- ')['embed_str']
+            embed.add_field(name='Behind the lock', value=behind_lock_str, inline=False)
 
         if 'trade' in item and item['trade']:
             embed.set_image(url=item['trade'].replace('%', '%25'))

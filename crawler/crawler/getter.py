@@ -71,10 +71,10 @@ def get_item_time(item_details_table, item_url):
 # get the item effects
 def get_item_effect(item_details_table, item_url):
     try:
-        effect_node = item_details_table.find(text="Effect")
+        effect_node = item_details_table.find('td', {'class': 'va-infobox-label'}, string="Effect")
         if effect_node is None:
-            effect_node = item_details_table.find(text="Usage")   # sometimes Effect is named Usage
-        effect_node = effect_node.parent.parent.find('td', {'class': 'va-infobox-content'})
+            effect_node = item_details_table.find('td', {'class': 'va-infobox-label'}, string="Usage")
+        effect_node = effect_node.parent.find('td', {'class': 'va-infobox-content'})
         res = generic_get_recursive(effect_node, item_url)
 
         if res is not None:
@@ -166,7 +166,20 @@ def get_item_notes(item_soup, item_url):
         return info
 
 
+# get the item locations
+def get_item_locations(item_soup, item_url):
+    locations = generic_get_category(item_soup, item_url, "Location")
+    locks = generic_get_category(item_soup, item_url, "Key_Location")
+    if locations and locks:
+        return locations + locks
+    elif locations:
+        return locations
+    else:
+        return locks
+
+
 # generic getter to get all text and links from a category of an item
+### TODO: Rework that mess, handle <li>, <ul> and <h3> properly to create one beautifull string
 def generic_get_category(item_soup, item_url, category_id):
     infos = []
     try:
