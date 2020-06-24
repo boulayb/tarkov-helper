@@ -18,7 +18,7 @@ def search_item(index, res_size=CONST_ES_RESULT_SIZE, scroll_time='0s'):
             for hit in search['hits']['hits']:
                 items.append(hit['_source'])
     except Exception as e:
-        logger.info("Warning: Elasticsearch failed to search index: " + CONST_ES_RESULT_SIZE)
+        logger.info("Warning: Elasticsearch failed to search index: " + str(CONST_ES_RESULT_SIZE))
         search = {}
         items = [e]
         total = -1  # error code
