@@ -108,7 +108,8 @@ def crawl_table(items, loot_table, tab=False):
             if loot_name is not None:
                 link = loot_name['href']
                 name = loot_name.getText()
-                items = crawl_item(items, name, link)
+                if 'index.php' not in link:
+                    items = crawl_item(items, name, link)
         except Exception as e:
             if link:
                 logger.info("Warning: Failed crawling item for url: " + link + " - reason: " + str(e))

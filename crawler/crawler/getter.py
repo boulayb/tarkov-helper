@@ -75,7 +75,7 @@ def get_item_effect(item_details_table, item_url):
         if effect_node is None:
             effect_node = item_details_table.find('td', {'class': 'va-infobox-label'}, string="Usage")
         effect_node = effect_node.parent.find('td', {'class': 'va-infobox-content'})
-        res = generic_get_recursive(effect_node, item_url)
+        res = generic_get_infos_recursive(effect_node, item_url)
 
         if res is not None:
             res_list = [i for i in res.split('\n') if i]   # remove empty strings
@@ -147,7 +147,7 @@ def get_item_quests(item_soup, item_url):
     quests = generic_get_category(item_soup, item_url, "Quests")
     rewards = generic_get_category(item_soup, item_url, "Quest rewards")
     if quests and rewards:
-        return quests + rewards
+        return quests + '\n' + rewards
     elif quests:
         return quests
     else:
@@ -159,7 +159,7 @@ def get_item_notes(item_soup, item_url):
     notes = generic_get_category(item_soup, item_url, "Notes")
     info = generic_get_category(item_soup, item_url, "Info")
     if notes and info:
-        return notes + info
+        return notes + '\n' + info
     elif notes:
         return notes
     else:
@@ -171,79 +171,108 @@ def get_item_locations(item_soup, item_url):
     locations = generic_get_category(item_soup, item_url, "Location")
     locks = generic_get_category(item_soup, item_url, "Key_Location")
     if locations and locks:
-        return locations + locks
+        return locations + '\n' + locks
     elif locations:
         return locations
     else:
         return locks
 
 
-# generic getter to get all text and links from a category of an item
-### TODO: Rework that mess, handle <li>, <ul> and <h3> properly to create one beautifull string
-def generic_get_category(item_soup, item_url, category_id):
-    infos = []
+# recursive function to deep search all nodes of an item category
+def generic_get_category_recursive(node, item_url, prefix=''):
     try:
+        res = ''
+        accepted_nodes = ['ul', 'li', 'p', 'span']
+        contents = node.contents
+
+        for info in contents:
+
+            if info.name == 'li':   # display prefix for a list (usually '- ')
+                res += prefix
+
+            if isinstance(info, str) is False and info.has_attr('class') and 'mw-editsection' in info['class']:  # ignore edit buttons
+                continue
+            elif isinstance(info, str) is False and info.name == 'a':
+                if info.has_attr('title') and info['title'] in CONST_EFFECT_LIST:   # if it is an effect, simply display the effect name
+                    res += " '" + info['title'] + "' "
+                elif info.has_attr('href') and info['href']:
+                    res += '[' + info.getText() + '](' + CONST_BASE_URL + info['href'] + ')'
+                else:
+                    res += info.getText()
+            elif isinstance(info, str) is False and info.name == 'br':
+                res += '\n'
+            elif isinstance(info, str) is False and info.name in accepted_nodes:
+                if node.name == 'ul':
+                    recursion = generic_get_category_recursive(info, item_url, "... " + prefix)  # Add "... " to the prefix to create a fake tabulation since Discord's Embeds do not like successives spaces or tabs
+                else:
+                    recursion = generic_get_category_recursive(info, item_url, prefix)
+                if recursion is not None:
+                    res += recursion
+            elif isinstance(info, str) is False:
+                res += info.getText()
+            else:
+                if 'Generic loot item' not in info and 'Quest item' not in info:
+                    res += info
+
+            if node.name == 'h3':       # better display if it is a subtitle
+                res = '[' + res + ']:'
+
+    except Exception as e:
+        if "has no attribute 'parent'" not in str(e):   # do not display error if it is because the item is not present on the page
+            logger.info("Warning: recursive node " + str(node) + " not parsed for item " + item_url + " - reason: " + str(e))
+        res = None
+
+    return res
+
+
+# generic getter to get all text from a category
+def generic_get_category(item_soup, item_url, category_id):
+    infos = ''
+    try:
+        last_node = ''
         images_found = False
+        accepted_nodes = ['ul', 'h3', 'li', 'p', 'div']
 
         current_node = item_soup.find(id=category_id).parent.find_next_sibling()
-        while current_node.name == 'ul' or current_node.name == 'h3' or current_node.name == 'li' or current_node.name == 'p':  # ul == list of infos, h3 == title/map of infos, li == images of infos, p == single info
+        while current_node.name in accepted_nodes:
+    
+            if infos.endswith('\n') is False:   # add a line return before appending the next node if it doesn't already exist
+                infos += '\n'
 
-            if current_node.name == 'ul':
-                # search for links in infos, if there is we keep them to display them
-                for children in current_node.findChildren(recursive=False):
-                    children_res = ''
-                    contents = children.contents
-                    for info in contents:
-                        if isinstance(info, str) is False and info.name == 'a':
-                            if info.has_attr('title') and info['title'] in CONST_EFFECT_LIST:
-                                children_res += "'" + info['title'] + "'"
-                            elif info.has_attr('href') and info['href']:
-                                children_res += '[' + info.getText() + '](' + CONST_BASE_URL + info['href'] + ')'
-                            else:
-                                children_res += info.getText()
-                        elif isinstance(info, str) is False and info.name == 'br':
-                            children_res += '\n'
-                        elif isinstance(info, str) is False:
-                            children_res += info.getText()
-                        else:
-                            children_res += info
-                    infos.append(children_res)
-
-            elif current_node.name == 'li' and images_found is False:
+            if current_node.find('img') or current_node.find('video'):
+                if last_node == 'h3':
+                    infos += 'Click title for images'   # add this message to make sure no h3 subtitle display without any infos under it
                 images_found = True
+            else:
+                new_infos = generic_get_category_recursive(current_node, item_url, prefix='- ')
+                if new_infos is not None:
+                    infos += new_infos
 
-            elif current_node.name == 'p':
-                current_node_res = ''
-                contents = current_node.contents
-                for info in contents:
-                    if isinstance(info, str) is False and info.name == 'a':
-                        if info.has_attr('title') and info['title'] in CONST_EFFECT_LIST:
-                            current_node_res += "'" + info['title'] + "'"
-                        elif info.has_attr('href') and info['href']:
-                            current_node_res += '[' + info.getText() + '](' + CONST_BASE_URL + info['href'] + ')'
-                        else:
-                            current_node_res += info.getText()
-                    elif isinstance(info, str) is False and info.name == 'br':
-                        current_node_res += '\n'
-                    elif isinstance(info, str) is False:
-                        current_node_res += info.getText()
-                    else:
-                        current_node_res += info
-                infos.append(current_node_res)
+            last_node = current_node.name
 
             current_node = current_node.find_next_sibling()
 
-        if images_found is True:
-            infos.append('Check [wiki page](' + CONST_BASE_URL + item_url + '#' + category_id + ') for image')
+        if images_found is True:    # since we can't display all found images in the discord embed, we display this message if one or more image is found
+            if infos.endswith('\n') is False:
+                infos += '\n'
+            infos += 'Check [wiki page](' + CONST_BASE_URL + item_url + '#' + category_id + ') for images'
+
+        if len(infos) <= 0:
+            infos = None
+        else:
+            infos = infos.lstrip('\n').rstrip('\n') # remove unnecessary line returns
+
     except Exception as e:
         if "has no attribute 'parent'" not in str(e):   # do not display error if it is because the item is not present on the page
             logger.info("Warning: " + category_id + " not found for item " + item_url + " - reason: " + str(e))
         infos = None
 
-    return infos if infos and len(infos) > 0 else None
+    return infos
 
 
-def generic_get_recursive(node, item_url):
+# recursive function to deep search all nodes of an item infos
+### TODO: Refactor this to better look like generic_get_category_recursive (maybe even use it instead)
+def generic_get_infos_recursive(node, item_url):
     try:
         res = ''
         contents = node.contents
@@ -258,7 +287,7 @@ def generic_get_recursive(node, item_url):
             elif isinstance(info, str) is False and info.name == 'br':
                 res += '\n'
             elif isinstance(info, str) is False and (info.name == 'ul' or info.name == 'li' or info.name == 'p'):
-                recursion = generic_get_recursive(info, item_url)
+                recursion = generic_get_infos_recursive(info, item_url)
                 if recursion is not None:
                     res += recursion
             elif isinstance(info, str) is False:
@@ -275,6 +304,7 @@ def generic_get_recursive(node, item_url):
 
 
 # generic getter to get all text from the info table of an item
+### TODO: Refactor this to better look like generic_get_category (maybe even use it instead)
 def generic_get_infos(item_details_table, item_url, info_id):
     try:
         item_info = item_details_table.find(text=info_id).parent.parent.find('td', {'class': 'va-infobox-content'})

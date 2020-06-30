@@ -157,7 +157,7 @@ def build_item_embed(item):
 
         embed = discord.Embed(
             title=title,
-            description=' '.join(item['description']) if item['description'] else '',
+            description=item['description'] if item['description'] else '',
             url=item['url'] if item['url'] else '',
             colour=discord.Colour.blue()
         )
@@ -196,7 +196,7 @@ def build_item_embed(item):
             embed.add_field(name='Sold by', value=item['dealer'], inline=True)
         
         if item['notes']:
-            notes_str = tools.build_string(item['notes'], item['url'] + "#Notes", prefix='- ')['embed_str']
+            notes_str = tools.build_string(item['notes'].split('\n'), item['url'] + "#Notes")['embed_str']
             embed.add_field(name='Notes', value=notes_str, inline=False)
 
         if item['zone']:
@@ -216,11 +216,11 @@ def build_item_embed(item):
             embed.add_field(name='Inventory', value=item['inventory'], inline=False)
 
         if item['quests']:
-            quests_str = tools.build_string(item['quests'], item['url'] + "#Quests", prefix='- ')['embed_str']
+            quests_str = tools.build_string(item['quests'].split('\n'), item['url'] + "#Quests")['embed_str']
             embed.add_field(name='Quests', value=quests_str, inline=False)
 
         if item['hideouts']:
-            hideouts_str = tools.build_string(item['hideouts'], item['url'] + "#Hideout", prefix='- ')['embed_str']
+            hideouts_str = tools.build_string(item['hideouts'].split('\n'), item['url'] + "#Hideout")['embed_str']
             embed.add_field(name='Hideouts', value=hideouts_str, inline=False)
 
         if item['penalties']:
@@ -243,13 +243,13 @@ def build_item_embed(item):
             embed.add_field(name='Debuff', value=effect_str, inline=True)
 
         if item['locations']:
-            locations_str = tools.build_string(item['locations'], item['url'] + "#Location", prefix='- ')['embed_str']
+            locations_str = tools.build_string(item['locations'].split('\n'), item['url'] + "#Location")['embed_str']
             embed.add_field(name='Locations', value=locations_str, inline=False)
         if item['lock_location']:
-            lock_location_str = tools.build_string(item['lock_location'], item['url'] + "#Lock_Locations", prefix='- ')['embed_str']
+            lock_location_str = tools.build_string(item['lock_location'].split('\n'), item['url'] + "#Lock_Locations")['embed_str']
             embed.add_field(name='Lock location', value=lock_location_str, inline=False)
         if item['behind_lock']:
-            behind_lock_str = tools.build_string(item['behind_lock'], item['url'] + "#Behind_the_Lock", prefix='- ')['embed_str']
+            behind_lock_str = tools.build_string(item['behind_lock'].split('\n'), item['url'] + "#Behind_the_Lock")['embed_str']
             embed.add_field(name='Behind the lock', value=behind_lock_str, inline=False)
 
         if 'trade' in item and item['trade']:
